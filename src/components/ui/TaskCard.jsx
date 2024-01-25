@@ -1,8 +1,14 @@
-import React from 'react'
+import { useState, useEffect } from 'react'
 import { useTaskContext } from '../../context'
+import {numToMonthName} from '../../utils'
+import PropTypes from 'prop-types'
 
 const TaskCard = ({ task, startDrag, draggedId, setBtns, btns }) => {
     const [state, dispatch] = useTaskContext()
+    const dueDate = {
+        month: numToMonthName(task.due.split('-')[1]),
+        day: task.due.split('-')[2]
+    }
 
     const optionBtnHandler = e => {
         e.stopPropagation();
@@ -26,21 +32,19 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns }) => {
             type: 'DELETE',
             payload: id
         })
-        dispatch({
+        dispatch({  
             type: 'SET'
         })
     }
 
+    const {isTaskOpBtnClicked} = btns
 
-
-
-    const { isTaskOpBtnClicked } = btns
     return (
-        <div key={task.id} className={`relative  w-[180px] mx-auto  bg-white mt-4  rounded-md text-black cursor-pointer  ${draggedId === task.id && 'opacity-0'}`}>
-            <div className='flex justify-between items-center border-b-[1px] border-slate-300 py-2 px-4'>
-                <p className='w-[130px] text-left' onMouseDownCapture={(e) => { startDrag(e, task) }} >{task.title}</p>
+        <div key={task.id} className={`relative  w-[180px] mx-auto  bg-white  rounded-md text-black cursor-pointer  ${draggedId === task.id && 'opacity-0'}`} onMouseDown={(e) => { startDrag && startDrag(e, task) }}>
+            <div className='flex justify-between items-center border-b-[1px] border-slate-300 py-2 px-4' >
+                <p className='w-[130px] text-left' >{task.title.length < 14 ? task.title:task.title.slice(0,14)+'...'}</p>
                 <div className='relative' >
-                    <button className='w-[20px] leading-[0px] h-[20px] rounded-full text-center  font-semibold pb-2' onClick={(e) => optionBtnHandler(e)}>...</button>
+                    <button className='w-[20px] leading-[0px] h-[20px] rounded-full text-center  font-bold pb-2' onClick={(e) => optionBtnHandler(e)}>...</button>
                     {isTaskOpBtnClicked &&
                         <div className="absolute shadow-md shadow-slate-400 bg-white w-[140px] block px-5 py-3 rounded-md text-xs flex flex-col gap-y-3 top-[30px] -right-[70px]">
                             {task.status !== 'done' &&
@@ -68,11 +72,18 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns }) => {
             <div className={` py-4 px-3 text-left`}>
                 <div className="flex justify-between">
                     <svg xmlns="http://www.w3.org/2000/svg" fill='#000' width='14' viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" /></svg>
-                    <p className='text-sm'>{task.due}</p>
+                    <p className='text-sm'>{dueDate.month} {dueDate.day}</p>
                 </div>
             </div>
         </div>
     )
 }
 
+TaskCard.propTypes = {
+    task: PropTypes.object.isRequired,
+    startDrag:PropTypes.func,
+    setBtns:PropTypes.func,
+    btns:PropTypes.object,
+    draggedId: PropTypes.string,
+}
 export default TaskCard

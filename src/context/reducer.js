@@ -1,4 +1,5 @@
 const reducer = (state, action) => {
+  let task = {}, tasksStorage = {}, tasksInString= ''
   switch (action.type) {
     case "ADD":
       return {
@@ -7,7 +8,7 @@ const reducer = (state, action) => {
       };
 
     case "TASK_DONE":
-      const task = state.tasks.filter(t=>t.id === action.payload)[0]
+      task = state.tasks.filter(t=>t.id === action.payload)[0]
       task.status = 'done'
       return {
         ...state,
@@ -22,7 +23,7 @@ const reducer = (state, action) => {
 
     case "GET":
       if (localStorage.getItem("tasks")) {
-        const tasksStorage = JSON.parse(localStorage.getItem("tasks"));
+        tasksStorage = JSON.parse(localStorage.getItem("tasks"));
         return {
           ...state,
           tasks: [...tasksStorage],
@@ -33,7 +34,7 @@ const reducer = (state, action) => {
         tasks: [],
       };
       case 'SET':
-        const tasksInString= (state.tasks).length > 0 ? JSON.stringify(state.tasks) : ''
+        tasksInString= (state.tasks).length > 0 ? JSON.stringify(state.tasks) : ''
         localStorage.setItem('tasks', tasksInString)
          return state
 

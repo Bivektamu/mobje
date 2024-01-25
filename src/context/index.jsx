@@ -1,5 +1,7 @@
 import { createContext, useContext, useReducer } from "react";
 import reducer from "./reducer";
+import { ReactPropTypes } from "react";
+import PropTypes from 'prop-types'
 
 const TaskContext = createContext();
 
@@ -8,7 +10,7 @@ const initialState = {
   tasks: [],
 };
 
-export const TaskProvider = ({ children }) => {
+const TaskProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   return (
     <TaskContext.Provider value={[state, dispatch]}>
@@ -16,3 +18,10 @@ export const TaskProvider = ({ children }) => {
     </TaskContext.Provider>
   );
 };
+// 
+// 
+TaskProvider.propTypes = {
+  children: PropTypes.element.isRequired
+}
+
+export  {TaskProvider}

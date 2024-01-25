@@ -9,8 +9,7 @@ const EditForm = ({ setBtns, taskId }) => {
     const [formData, setFormData] = useState({
         id: '',
         title: '',
-        desc: '',
-        assignee: '',
+        description: '',
         due: '',
         status: ''
     })
@@ -23,15 +22,14 @@ const EditForm = ({ setBtns, taskId }) => {
         setFormData({
             id: task.id,
             title: task.title,
-            desc: task.desc,
-            assignee: task.assignee,
+            description: task.description,
             due: task.due,
             status: task.status
         })
     }, [])
 
     
-    const { id, title, desc, assignee, due, status } = formData
+    const { id, title, description, assignee, due, status } = formData
     const submitHandler = e => {
         e.preventDefault()
         if(!showError)
@@ -79,41 +77,41 @@ const EditForm = ({ setBtns, taskId }) => {
         }
         setFormData({ ...formData, [e.target.name]: e.target.value })
     }
-
+    
     return (
         <>
-            <div className='w-screen z-10 h-screen fixed bg-black/50 flex items-center justify-center'>
-                <span className='absolute top-10 text-white text-4xl cursor-pointer' onClick={() => setBtns(prev=>({...prev, editBtn: {isClicked: false, id:''}}))}>x</span>
-
-                <form className='flex flex-col gap-y-6 bg-slate-800 p-10 w-[400px] rounded-lg' onSubmit={e => submitHandler(e)}>
-                    <div className='relative'>
-                        <input type="text" name='title' value={title} placeholder='Title' className='rounded-md py-2 px-4 w-full' onChange={e => handleInputChange(e)} />
-                        {showError && errorsUI.filter(e=>e.title).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e=>e.title)[0].title}</span>}
+            <div className='w-screen h-screen fixed bg-black/50 flex items-center z-20 justify-center'>
+                <div className=' bg-white  w-[400px] rounded-lg'>
+                    {/* <h3 className='font-semibold border-b-[1px] border-slate-300 px-8 py-4 flex justify-between items-center'>
+                        <span>Edit Task</span>
+                        <button className='cursor-pointer relative w-4 h-4  after:content-[""] after:absolute after:bg-slate-600 after:w-full after:h-[2px] after:left-0 after:rotate-45 before:content-[""] before:absolute before:bg-slate-600 before:w-full before:h-[2px] before:left-0 before:-rotate-45' onClick={() => setBtns(prev=>({...prev, editBtn: {isClicked: false, id:''}}))}></button>
+                    </h3> */}
+                    <form className='flex flex-col gap-y-6  mb-4 py-4' onSubmit={e => submitHandler(e)}>
+                    <div className='font-semibold border-b-[1px] border-slate-300 px-8 py-4 flex justify-between items-center'>
+                        <span>Edit Task</span>
+                        <button className='cursor-pointer relative w-4 h-4  after:content-[""] after:absolute after:bg-slate-600 after:w-full after:h-[2px] after:left-0 after:rotate-45 before:content-[""] before:absolute before:bg-slate-600 before:w-full before:h-[2px] before:left-0 before:-rotate-45' onClick={() => setBtns(prev=>({...prev, editBtn: {isClicked: false, id:''}}))}></button>
                     </div>
-                    <div className='relative'>
-                        <input type="text" name='desc' value={desc} placeholder='Decription' className='rounded-md py-2 px-4 w-full' onChange={e => handleInputChange(e)} />
-                        {showError && errorsUI.filter(e=>e.desc).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e=>e.desc)[0].desc}</span>}
-                    </div>
-                    <div className='relative'>
-                        <input type="text" name='assignee' value={assignee} placeholder='Assignee' className='rounded-md py-2 px-4 w-full' onChange={e => handleInputChange(e)} />
-                        {showError && errorsUI.filter(e=>e.assignee).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e=>e.assignee)[0].assignee}</span>}
-                    </div>
-                    <div className='relative'>
-                        <input type="date" name='due' value={due} placeholder='Due Date' className='rounded-md py-2 px-4 w-full' onChange={e => handleInputChange(e)} />
-                        {showError && errorsUI.filter(e=>e.due).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e=>e.due)[0].due}</span>}
-                    </div>
-                    <div className='relative'>
-                        <select value={status} name="status" id="" className='rounded-md py-2 px-4 w-full' onChange={e => handleInputChange(e)}>
-                            <option value="">Status</option>
-                            <option value="toDo">To Do</option>
-                            <option value="inProgress">In Progress</option>
-                            <option value="done">Done</option>
-                        </select>
-
-                        {showError && errorsUI.filter(e=>e.status).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e=>e.status)[0].status}</span>}
-                    </div>
-                    <button className='bg-blue-500 text-white rounded-md px-4 py-2'>Save</button>
-                </form>
+                        <div className='relative px-8'>
+                            <label className='text-sm mb-3 px-2 block capitalize' htmlFor="title"><span className="text-red-500">*</span> title</label>
+                            <input type="text" name='title' value={title} className='rounded-md border-[1px] border-slate-300 p-2 w-full text-sm' onChange={e => handleInputChange(e)} />
+                            {showError && errorsUI.filter(e => e.title).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e => e.title)[0].title}</span>}
+                        </div>
+                        <div className='relative px-8'>
+                            <label className='text-sm mb-3 px-2 block capitalize' htmlFor="description"><span className="text-red-500">*</span> description</label>
+                            <input type="text" name='description' value={description} className='rounded-md border-[1px] border-slate-300 p-2 w-full text-sm' onChange={e => handleInputChange(e)} />
+                            {showError && errorsUI.filter(e => e.description).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e => e.description)[0].description}</span>}
+                        </div>
+                        <div className='relative px-8'>
+                            <label className='text-sm mb-3 px-2 block capitalize' htmlFor="due"><span className="text-red-500">*</span> due date</label>
+                            <input type="date" name='due' value={due} className='rounded-md border-[1px] border-slate-300 p-2 w-full text-sm' onChange={e => handleInputChange(e)} />
+                            {showError && errorsUI.filter(e => e.due).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e => e.due)[0].due + ' date'}</span>}
+                        </div>
+                        <div className="flex px-8  pt-4 justify-end items-center border-t-[1px] border-slate-300 gap-x-4">
+                            <button type='button' className='bg-slate-100 text-slate-1000 border-[1px] border-slate-400 rounded-md px-4 py-1' onClick={() => setBtns(prev=>({...prev, editBtn: {isClicked: false, id:''}}))}>Cancel</button>
+                            <button className='bg-blue-500 text-white rounded-md px-4 py-1'>Save</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </>
     )

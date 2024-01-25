@@ -3,7 +3,6 @@ import AddForm from './AddForm'
 import EditForm from './EditForm'
 import { useTaskContext } from '../../context'
 import TaskCard from '../ui/TaskCard'
-import DraggedTask from './DraggedTask'
 
 const Kanban = () => {
     const [addBtn, setAddBtn] = useState(false)
@@ -47,6 +46,7 @@ const Kanban = () => {
             setDraggedTask({ ...draggedTask, task: {} })
             return setActiveCol('')
         }
+        console.log(draggedTask.task, activeCol)
         const newTask = draggedTask.task
         newTask.status = activeCol
         dispatch({
@@ -87,16 +87,15 @@ const Kanban = () => {
     }
 
     const startDrag = (e, task) => {
-        setDragged(true)
-        setDraggedTask({ ...draggedTask, x: (e.currentTarget).getBoundingClientRect().left, y: (e.currentTarget).getBoundingClientRect().top, task })
+        setDraggedTask({ ...draggedTask, x: (e.currentTarget.parentElement).getBoundingClientRect().left, y: (e.currentTarget.parentElement).getBoundingClientRect().top, task })
         setCords({ ...cords, x: e.clientX, y: e.clientY })
+        setDragged(true)
     }
 
-// const clickedAndHoldOrNot = (e) => {
-//     
-// }
+
 
     const handleAllBtns = (e) => {
+        console.log(e.target.nodeName)
         setTimeout(() => {
             if (e.target.nodeName !== 'Button') {
                 setBtns((prev) => ({ ...prev, isTaskOpBtnClicked: false }))
@@ -128,18 +127,14 @@ const Kanban = () => {
                             <button className='mb-8 bg-blue-400 py-2 px-4 rounded-md text-lg font-medium text-white shadow-lg shadow-blue-500/50' onClick={() => setAddBtn(true)}>Add Task</button>
 
                             <div id="kanban-board" className=" p-10 rounded-lg grid grid-cols-3 w-full gap-x-8" >
-                                {isDragged &&
-                                    <div className="dragEle fixed cursor-pointer" style={{ top: `${draggedTask.y}px`, left: `${draggedTask.x}px` }}>
-                                        <DraggedTask task={draggedTask.task} />
-                                        {/* <span className={` text-white w-[180px] h-[35px] px-4 z-20 flex shadow-lg rounded-md items-center text-left ${draggedTask.task.status === 'toDo' && 'bg-blue-500 shadow-blue-500/50'} ${draggedTask.task.status === 'inProgress' && 'bg-yellow-500 shadow-yellow-500/50'} ${draggedTask.task.status === 'done' && 'bg-green-500 shadow-green-500/50'}`} >{draggedTask.task.title}</span> */}
-                                    </div>
-                                }
+                                {isDragged && 
+                                <span className={`dragEle fixed cursor-pointer text-white w-[180px] h-[35px] px-4 z-20 flex shadow-lg rounded-md items-center text-left ${draggedTask.task.status === 'toDo' && 'bg-blue-500 shadow-blue-500/50'} ${draggedTask.task.status === 'inProgress' && 'bg-yellow-500 shadow-yellow-500/50'} ${draggedTask.task.status === 'done' && 'bg-green-500 shadow-green-500/50'}`} style={{ top: `${draggedTask.y}px`, left: `${draggedTask.x}px` }}>{draggedTask.task.title}</span>}
 
-                                {Object.keys(taskList).map(k =>
-                                    <div key={k} className=' pb-4' ref={e => dndRefs.current[0] = e} >
-                                        <h2 className='text-lg mb-6 font-semibold border-b-[1px] border-slate-300 p-2'>{k === 'toDo' ? 'To do' : k === 'done' ? 'Done' : 'In Progress'}</h2>
+                                {Object.keys(taskList).map((k, i) =>
+                                    <div key={i} className=' pb-4' ref={e => dndRefs.current[0] = e} >
+                                        <h2 className='text-lg font-semibold border-b-[1px] border-slate-300 p-2'>{k === 'toDo' ? 'To do' : k === 'done' ? 'Done' : 'In Progress'}</h2>
                                         {taskList[k].map((task) =>
-                                            <TaskCard key={task.id} btns={btns} setBtns={setBtns} draggedId={draggedTask.task.id} startDrag={startDrag} task={task} />
+                                            <TaskCard btns={btns} setBtns={setBtns} draggedId={draggedTask.task.id} startDrag={startDrag} key={task.id} task={task} />
                                         )}
 
                                     </div>)}
