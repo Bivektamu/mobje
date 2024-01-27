@@ -1,6 +1,5 @@
 import { createContext, useContext, useReducer } from "react";
 import reducer from "./reducer";
-import { ReactPropTypes } from "react";
 import PropTypes from 'prop-types'
 
 const TaskContext = createContext();
@@ -8,6 +7,10 @@ const TaskContext = createContext();
 export const useTaskContext = () => useContext(TaskContext);
 const initialState = {
   tasks: [],
+  modal: {
+    content: (''),
+    show: false,
+  }
 };
 
 const TaskProvider = ({ children }) => {

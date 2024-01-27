@@ -4,9 +4,10 @@ import EditForm from './EditForm'
 import { useTaskContext } from '../../context'
 import TaskCard from '../ui/TaskCard'
 import DraggedTask from './DraggedTask'
+import { sortTasks } from '../../utils'
+import TaskDetail from './TaskDetail'
 
 const Kanban = () => {
-    const [addBtn, setAddBtn] = useState(false)
     const [taskId, setTaskId] = useState()
     const [state, dispatch] = useTaskContext()
     const [taskList, setTaskList] = useState({ toDo: [], inProgress: [], done: [] })
@@ -16,30 +17,109 @@ const Kanban = () => {
     const [draggedTask, setDraggedTask] = useState({ ...cords, task: {} })
     const [isDragged, setDragged] = useState(false)
     const [activeCol, setActiveCol] = useState()
+    const [isClicked, setIsClicked] = useState({
+        state:false,
+        task: '',
+        time:(new Date()).getTime()
+    })
+
+    const [modal, setModal] = useState()
+
+    useEffect(()=> {
+        if(modal && modal !== '') {
+            dispatch({
+                type: 'MODAL',
+                payload: {
+                    content:modal,
+                    show: true
+                } 
+            })
+        }
+        else {
+            dispatch({
+                type: 'MODAL',
+                payload: {
+                    content:'',
+                    show:false
+                }
+            })
+        }
+    }, [modal])
+    
+    const {task} = isClicked
+
+    useEffect(()=> {
+        if(task && task !=='') {
+            console.log(task)
+            setModal(<TaskDetail closeModal={setModal} task={task} />)
+            
+        }
+    }, [task])
 
     const [btns, setBtns] = useState({
-        isTaskOpBtnClicked: false,
+        isTaskOpBtnClicked: {
+            isClicked: false,
+            clickedTaskId: ''
+        },
         editBtn: {
             isClicked: false,
             id: ''
+        },
+        addBtn: {
+            isClicked: false,
+            status: 'todo'
         }
     })
 
     useEffect(() => {
         if (tasks) {
             let tempTaskList = { toDo: [], inProgress: [], done: [] }
-            tasks.map(t => {
+            
+            const sortedTasks = sortTasks(tasks)
+            sortedTasks.map(t => {
                 tempTaskList = { ...tempTaskList, [t.status]: [...(tempTaskList[t.status] || []), t] }
             })
             setTaskList(tempTaskList)
         }
     }, [tasks])
 
+    const { editBtn, addBtn } = btns
+
+    useEffect(()=> {
+        let content;
+        if(addBtn.isClicked) {
+            content=<AddForm status='toDo' btns={btns} setBtns={setBtns} />
+        }
+        else if(editBtn.isClicked) {
+            content=<EditForm taskId={editBtn.id} btns={btns} setBtns={setBtns} />
+        }
+
+        if(content) {
+            dispatch({
+                type: 'MODAL',
+                payload: {
+                    content:content,
+                    show: true
+                }
+            })
+        }
+        else {
+            dispatch({
+                type: 'MODAL',
+                payload: {
+                    content:'',
+                    show:false
+                }
+            })
+        }
+
+    }, [addBtn, editBtn])
+
 
     const dragStop = e => {
         setCords({ ...cords, x: e.clientX, y: e.clientY })
         setDragged(false)
-        if (activeCol === '') {
+        if (activeCol === '' || !activeCol) {
             return setDraggedTask({ ...draggedTask, task: {} })
 
         }
@@ -47,6 +127,7 @@ const Kanban = () => {
             setDraggedTask({ ...draggedTask, task: {} })
             return setActiveCol('')
         }
+        console.log(activeCol, draggedTask.task)
         const newTask = draggedTask.task
         newTask.status = activeCol
         dispatch({
@@ -64,7 +145,17 @@ const Kanban = () => {
         if (!isDragged) {
             return
         }
+        const diff = { x: e.clientX - cords.x, y: e.clientY - cords.y }
+        
+        // if(diff.x == 0 && diff.y== 0) {
+        //     return
+        // }
+        
         const kanban = document.getElementById('kanban-board').getBoundingClientRect()
+
+        if (diff.x == 0 && diff.y== 0) {
+            return
+        }
 
         if (e.clientX > kanban.right || e.clientX < kanban.left || e.clientY < kanban.top || e.clientY > kanban.bottom) {
             setActiveCol('')
@@ -81,38 +172,33 @@ const Kanban = () => {
             setActiveCol('done')
         }
 
-        const diff = { x: e.clientX - cords.x, y: e.clientY - cords.y }
+      
         setCords({ ...cords, x: e.clientX, y: e.clientY })
         setDraggedTask({ ...draggedTask, x: draggedTask.x + diff.x, y: draggedTask.y + diff.y })
     }
 
     const startDrag = (e, task) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsClicked((prev)=> ({...prev, time: (new Date()).getTime()}))
         setDragged(true)
         setDraggedTask({ ...draggedTask, x: (e.currentTarget).getBoundingClientRect().left, y: (e.currentTarget).getBoundingClientRect().top, task })
         setCords({ ...cords, x: e.clientX, y: e.clientY })
     }
 
-// const clickedAndHoldOrNot = (e) => {
-//     
-// }
-
     const handleAllBtns = (e) => {
         setTimeout(() => {
             if (e.target.nodeName !== 'Button') {
-                setBtns((prev) => ({ ...prev, isTaskOpBtnClicked: false }))
+                setBtns((prev) => ({ ...prev, isTaskOpBtnClicked: {isClicked: false, clickedTaskId: ''} }))
             }
-            // if(e.current)
         }, 1)
     }
-
-
-    const { editBtn } = btns
 
     // return <>asdf</>
     return (
         <>
-            {addBtn && <AddForm status='to do' setAddBtn={(isClicked) => setAddBtn(isClicked)} />}
-            {editBtn.isClicked && <EditForm taskId={editBtn.id} setBtns={setBtns} />}
+            {/* {addBtn.isClicked && <AddForm status='toDo' btns={btns} setBtns={setBtns} />} */}
+            {/* {editBtn.isClicked && <EditForm taskId={editBtn.id} setBtns={setBtns} />} */}
 
 
             <div className='mx-auto flex items-center justify-center py-10  h-screen' onMouseMove={e => mouseTracker(e)} onMouseUp={e => dragStop(e)} onClick={handleAllBtns}>
@@ -121,25 +207,30 @@ const Kanban = () => {
                     {tasks.length === 0 ?
                         <div className="bg-white text-center rounded-lg shadow-lg p-6">
                             <h1 className='text-xl mb-6'>There are no tasks. Please add new task.</h1>
-                            <button className='bg-blue-400 py-2 px-4 rounded-md text-lg font-medium text-white shadow-lg shadow-blue-500/50' onClick={() => setAddBtn(true)}>Add Task</button>
+                            <button className='bg-blue-400 py-2 px-4 rounded-md text-lg font-medium text-white shadow-lg shadow-blue-500/50' onClick={() => setBtns({ ...btns, addBtn: { isClicked: true, status: 'toDo' } })}>Add Task</button>
                         </div>
                         :
                         <>
-                            <button className='mb-8 bg-blue-400 py-2 px-4 rounded-md text-lg font-medium text-white shadow-lg shadow-blue-500/50' onClick={() => setAddBtn(true)}>Add Task</button>
-
-                            <div id="kanban-board" className=" p-10 rounded-lg grid grid-cols-3 w-full gap-x-8" >
+                            <div id="kanban-board" className=" py-10 rounded-lg grid grid-cols-3 w-full gap-x-4" >
                                 {isDragged &&
                                     <div className="dragEle fixed cursor-pointer" style={{ top: `${draggedTask.y}px`, left: `${draggedTask.x}px` }}>
                                         <DraggedTask task={draggedTask.task} />
-                                        {/* <span className={` text-white w-[180px] h-[35px] px-4 z-20 flex shadow-lg rounded-md items-center text-left ${draggedTask.task.status === 'toDo' && 'bg-blue-500 shadow-blue-500/50'} ${draggedTask.task.status === 'inProgress' && 'bg-yellow-500 shadow-yellow-500/50'} ${draggedTask.task.status === 'done' && 'bg-green-500 shadow-green-500/50'}`} >{draggedTask.task.title}</span> */}
                                     </div>
                                 }
 
                                 {Object.keys(taskList).map(k =>
-                                    <div key={k} className=' pb-4' ref={e => dndRefs.current[0] = e} >
-                                        <h2 className='text-lg mb-6 font-semibold border-b-[1px] border-slate-300 p-2'>{k === 'toDo' ? 'To do' : k === 'done' ? 'Done' : 'In Progress'}</h2>
+                                    <div key={k} className={`select-none flex flex-col gap-y-6 pb-4 ${(isDragged && activeCol===k) && 'border-[1px] border-dashed border-slate-400'}`} ref={e => dndRefs.current[0] = e} >
+                                        <h2 className='flex justify-between  text-lg mb-2 font-semibold border-b-[1px] border-slate-300 p-2'>
+                                            <p>
+                                                <span className='mr-4'>{k === 'toDo' ? 'To do' : k === 'done' ? 'Done' : 'In Progress'}</span>
+                                                <span className='text-sm text-slate-500'>{taskList[k].length}</span>
+                                            </p>
+                                            {k !== 'done' &&
+                                                <button type='button' className="flex items-center justify-center text-slate-800 pb-[3px] w-6 h-6 rounded-full border-[1px] border-slate-400" onClick={() => setBtns({ ...btns, addBtn: { isClicked: true, status: k } })}>+</button>
+                                            }
+                                        </h2>
                                         {taskList[k].map((task) =>
-                                            <TaskCard key={task.id} btns={btns} setBtns={setBtns} draggedId={draggedTask.task.id} startDrag={startDrag} task={task} />
+                                            <TaskCard key={task.id} btns={btns} setBtns={setBtns} isClicked={isClicked} setIsClicked={setIsClicked} draggedId={draggedTask.task.id} startDrag={startDrag} task={task} />
                                         )}
 
                                     </div>)}

@@ -49,6 +49,13 @@ const reducer = (state, action) => {
           ...state, 
           tasks: [...state.tasks.filter(t=>t.id !== action.payload.id), action.payload]
         }
+      case 'MODAL': {
+        let temp = action.payload
+        return {
+          ...state,
+          modal: {content: temp.content, show: temp.show}
+        }
+      }
 
     default:
       console.log("Nothing done");

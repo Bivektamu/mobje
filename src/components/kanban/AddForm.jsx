@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTaskContext } from '../../context'
 
-const AddForm = ({ setAddBtn, status }) => {
+const AddForm = ({ setBtns, btns }) => {
     const [{ tasks }, dispatch] = useTaskContext()
     const [errorsUI, setErrorsUI] = useState([])
     const [showError, setShowError] = useState(false)
@@ -11,7 +11,7 @@ const AddForm = ({ setAddBtn, status }) => {
         title: '',
         description: '',
         due: '',
-        status: status
+        status: btns.addBtn.status
     })
 
     const { title, description, due } = formData
@@ -21,11 +21,9 @@ const AddForm = ({ setAddBtn, status }) => {
 
         Object.entries(formData).forEach(([key, value]) => {
             if (key !== 'id' && key !== 'status' && value === '') {
-                console.log(value)
                 temp = [...temp, { [key]: `Please add ${key}` }]
             }
         })
-        // console.log(temp.length)
         setErrorsUI([...temp])
     }, [])
 
@@ -34,7 +32,6 @@ const AddForm = ({ setAddBtn, status }) => {
         if (!showError)
             setShowError(true)
 
-        console.log(errorsUI)
         if (errorsUI.length > 0) {
             return
         }
@@ -43,7 +40,7 @@ const AddForm = ({ setAddBtn, status }) => {
             payload: formData
         })
         dispatch({ type: 'SET' })
-        setAddBtn(false)
+        setBtns({ ...btns, addBtn: { isClicked: false, status: 'toDo' } })
     }
 
     const handleInputChange = e => {
@@ -61,7 +58,6 @@ const AddForm = ({ setAddBtn, status }) => {
             }
         }
         else if (e.target.name === 'due' && e.target.value !== '') {
-            console.log()
             const currDate = new Date()
             const inputDateArr = e.target.value.split('-')
             const selectedDate = new Date(inputDateArr[0], inputDateArr[1] - 1, inputDateArr[2])
@@ -79,37 +75,35 @@ const AddForm = ({ setAddBtn, status }) => {
     }
 
     return (
-        <>
-            <div className='w-screen h-screen fixed bg-black/50 flex items-center z-20 justify-center'>
-                <div className=' bg-white  w-[400px] rounded-lg'>
-                    <h3 className='font-semibold border-b-[1px] border-slate-300 px-8 py-4 flex justify-between items-center'>
-                        <span>Add new Task</span>
-                        <button className='cursor-pointer relative w-4 h-4  after:content-[""] after:absolute after:bg-slate-600 after:w-full after:h-[2px] after:left-0 after:rotate-45 before:content-[""] before:absolute before:bg-slate-600 before:w-full before:h-[2px] before:left-0 before:-rotate-45' onClick={() => setAddBtn(false)}></button>
-                    </h3>
-                    <form className='flex flex-col gap-y-6  mb-4 py-4' onSubmit={e => submitHandler(e)}>
-                        <div className='relative px-8'>
-                            <label className='text-sm mb-3 px-2 block capitalize' htmlFor="title"><span className="text-red-500">*</span> title</label>
-                            <input type="text" name='title' value={title} className='outline-none rounded-md border-[1px] border-slate-300 p-2 w-full text-sm' onChange={e => handleInputChange(e)} />
-                            {showError && errorsUI.filter(e => e.title).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e => e.title)[0].title}</span>}
-                        </div>
-                        <div className='relative px-8'>
-                            <label className='text-sm mb-3 px-2 block capitalize' htmlFor="description"><span className="text-red-500">*</span> description</label>
-                            <input type="text" name='description' value={description} className='outline-none rounded-md border-[1px] border-slate-300 p-2 w-full text-sm' onChange={e => handleInputChange(e)} />
-                            {showError && errorsUI.filter(e => e.description).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e => e.description)[0].description}</span>}
-                        </div>
-                        <div className='relative px-8'>
-                            <label className='text-sm mb-3 px-2 block capitalize' htmlFor="due"><span className="text-red-500">*</span> due date</label>
-                            <input type="date" name='due' value={due} className='outline-none rounded-md border-[1px] border-slate-300 p-2 w-full text-sm' onChange={e => handleInputChange(e)} />
-                            {showError && errorsUI.filter(e => e.due).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e => e.due)[0].due + ' date'}</span>}
-                        </div>
-                        <div className="flex px-8  pt-4 justify-end items-center border-t-[1px] border-slate-300 gap-x-4">
-                            <button type='button' className='bg-slate-100 text-slate-1000 border-[1px] border-slate-400 rounded-md px-4 py-1' onClick={() => setAddBtn(false)}>Cancel</button>
-                            <button className='bg-blue-500 text-white rounded-md px-4 py-1'>Save</button>
-                        </div>
-                    </form>
+        <div className=' bg-white  w-fullrounded-lg'>
+            <h3 className='font-semibold border-b-[1px] border-slate-300 px-8 py-4 flex justify-between items-center'>
+                <span>Add new Task</span>
+                <button className='cursor-pointer relative w-4 h-4  after:content-[""] after:absolute after:bg-slate-600 after:w-full after:h-[2px] after:left-0 after:rotate-45 before:content-[""] before:absolute before:bg-slate-600 before:w-full before:h-[2px] before:left-0 before:-rotate-45' onClick={() => setBtns({ ...btns, addBtn: { isClicked: false, status: 'toDo' } })
+                }></button>
+            </h3>
+            <form className='flex flex-col gap-y-6  mb-4 py-4' onSubmit={e => submitHandler(e)}>
+                <div className='relative px-8'>
+                    <label className='text-sm mb-3 px-2 block capitalize' htmlFor="title"><span className="text-red-500">*</span> title</label>
+                    <input type="text" name='title' value={title} className='outline-none rounded-md border-[1px] border-slate-300 p-2 w-full text-sm' onChange={e => handleInputChange(e)} />
+                    {showError && errorsUI.filter(e => e.title).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e => e.title)[0].title}</span>}
                 </div>
-            </div>
-        </>
+                <div className='relative px-8'>
+                    <label className='text-sm mb-3 px-2 block capitalize' htmlFor="description"><span className="text-red-500">*</span> description</label>
+                    <input type="text" name='description' value={description} className='outline-none rounded-md border-[1px] border-slate-300 p-2 w-full text-sm' onChange={e => handleInputChange(e)} />
+                    {showError && errorsUI.filter(e => e.description).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e => e.description)[0].description}</span>}
+                </div>
+                <div className='relative px-8'>
+                    <label className='text-sm mb-3 px-2 block capitalize' htmlFor="due"><span className="text-red-500">*</span> due date</label>
+                    <input type="date" name='due' value={due} className='outline-none rounded-md border-[1px] border-slate-300 p-2 w-full text-sm' onChange={e => handleInputChange(e)} />
+                    {showError && errorsUI.filter(e => e.due).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e => e.due)[0].due + ' date'}</span>}
+                </div>
+                <div className="flex px-8  pt-4 justify-end items-center border-t-[1px] border-slate-300 gap-x-4">
+                    <button type='button' className='bg-slate-100 text-slate-1000 border-[1px] border-slate-400 rounded-md px-4 py-1' onClick={() => setBtns({ ...btns, addBtn: { isClicked: false, status: 'toDo' } })
+                    }>Cancel</button>
+                    <button className='bg-blue-500 text-white rounded-md px-4 py-1'>Save</button>
+                </div>
+            </form>
+        </div>
     )
 }
 
