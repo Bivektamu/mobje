@@ -23,38 +23,23 @@ const Kanban = () => {
         time:(new Date()).getTime()
     })
 
-    const [modal, setModal] = useState()
+    const [modal, setModal] = useState({})
 
     useEffect(()=> {
-        if(modal && modal !== '') {
+        if(modal && Object.keys(modal).length > 0) {
             dispatch({
                 type: 'MODAL',
-                payload: {
-                    content:modal,
-                    show: true
-                } 
+                payload: modal
             })
         }
         else {
             dispatch({
                 type: 'MODAL',
-                payload: {
-                    content:'',
-                    show:false
-                }
+                payload: ''
             })
         }
     }, [modal])
     
-    const {task} = isClicked
-
-    useEffect(()=> {
-        if(task && task !=='') {
-            console.log(task)
-            setModal(<TaskDetail closeModal={setModal} task={task} />)
-            
-        }
-    }, [task])
 
     const [btns, setBtns] = useState({
         isTaskOpBtnClicked: {
@@ -88,32 +73,29 @@ const Kanban = () => {
     useEffect(()=> {
         let content;
         if(addBtn.isClicked) {
-            content=<AddForm status='toDo' btns={btns} setBtns={setBtns} />
+            setModal(<AddForm status='toDo' btns={btns} setBtns={setBtns} />)
         }
         else if(editBtn.isClicked) {
-            content=<EditForm taskId={editBtn.id} btns={btns} setBtns={setBtns} />
-        }
-
-        if(content) {
-            dispatch({
-                type: 'MODAL',
-                payload: {
-                    content:content,
-                    show: true
-                }
-            })
+            setModal(<EditForm taskId={editBtn.id} btns={btns} setBtns={setBtns} />)
         }
         else {
-            dispatch({
-                type: 'MODAL',
-                payload: {
-                    content:'',
-                    show:false
-                }
-            })
+           setModal({})
         }
 
     }, [addBtn, editBtn])
+    
+    const {task} = isClicked
+
+    useEffect(()=> {
+        console.log(task)
+        if(task && task !=='') {
+            console.log(task)
+            setModal(<TaskDetail closeModal={setIsClicked} task={task} />)
+        }
+        else {
+            setModal({})
+        }
+    }, [task])
 
 
     const dragStop = e => {

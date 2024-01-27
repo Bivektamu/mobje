@@ -75,7 +75,7 @@ const AddForm = ({ setBtns, btns }) => {
     }
 
     return (
-        <div className=' bg-white  w-fullrounded-lg'>
+        <div className=' bg-white  w-full rounded-lg'>
             <h3 className='font-semibold border-b-[1px] border-slate-300 px-8 py-4 flex justify-between items-center'>
                 <span>Add new Task</span>
                 <button className='cursor-pointer relative w-4 h-4  after:content-[""] after:absolute after:bg-slate-600 after:w-full after:h-[2px] after:left-0 after:rotate-45 before:content-[""] before:absolute before:bg-slate-600 before:w-full before:h-[2px] before:left-0 before:-rotate-45' onClick={() => setBtns({ ...btns, addBtn: { isClicked: false, status: 'toDo' } })

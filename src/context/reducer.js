@@ -50,10 +50,9 @@ const reducer = (state, action) => {
           tasks: [...state.tasks.filter(t=>t.id !== action.payload.id), action.payload]
         }
       case 'MODAL': {
-        let temp = action.payload
         return {
           ...state,
-          modal: {content: temp.content, show: temp.show}
+          modal: action.payload
         }
       }
 

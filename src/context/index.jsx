@@ -7,10 +7,7 @@ const TaskContext = createContext();
 export const useTaskContext = () => useContext(TaskContext);
 const initialState = {
   tasks: [],
-  modal: {
-    content: (''),
-    show: false,
-  }
+  modal: {}
 };
 
 const TaskProvider = ({ children }) => {

@@ -14,21 +14,23 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
     const onClick = (e, task) => {
         e.stopPropagation()
         e.preventDefault()
-        
+
         const newTime = (new Date()).getTime()
-        if(newTime - isClicked.time < 300) {
-            return setIsClicked((prev)=> ({...prev, state: true, task: task}))
+        if (newTime - isClicked.time < 300) {
+            return setIsClicked({ time: newTime, state: true, task: task })
         }
-         return setIsClicked((prev)=> ({...prev, state: false, task: ''}))
+        return setIsClicked({ time: newTime, state: false, task: '' })
     }
 
 
 
-    const markDone = () => {
+    const markDone = (e) => {
+        e.stopPropagation()
         setBtns((prev) => ({
             ...prev, isTaskOpBtnClicked: { isClicked: false, clickedTaskId: '' }
         }))
         dispatch({ type: 'TASK_DONE', payload: id })
+        dispatch({ type: 'SET' })
     }
 
 
@@ -37,7 +39,8 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
 
         setTimeout(() => { setBtns((prev) => ({ ...prev, isTaskOpBtnClicked: { isClicked: true, clickedTaskId: id } })) }, 1)
     }
-    const editHandler = id => {
+    const editHandler = (e, id) => {
+        e.stopPropagation()
         setBtns(prev => ({
             ...prev, editBtn: {
                 isClicked: true,
@@ -50,30 +53,27 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
 
     const deleteHandler = (e, id) => {
         e.stopPropagation()
+        const content = (
+            <>
+                <h3 className='font-semibold border-b-[1px] border-slate-300 px-4 py-4 text-center'>Are you sure you want to delete the task ?</h3>
+                <div className="flex px-8  pt-4 justify-center items-center border-t-[1px] border-slate-300 gap-x-4">
+                    <button type='button' className='bg-slate-100 text-slate-1000 border-[1px] border-slate-400 rounded-md px-4 py-1'
+                        onClick={() => dispatch({ type: 'MODAL', payload: {} })}>Cancel</button>
+                    <button
+                        className='bg-red-500 text-white rounded-md px-4 py-1'
+                        onClick={() => {
+                            dispatch({ type: 'DELETE', payload: id })
+                            dispatch({ type: 'MODAL', payload: {} })
+                            dispatch({ type: 'SET' })
+                        }}
+                    >Delete</button>
+                </div>
+            </>
+        )
+
         dispatch({
             type: 'MODAL',
-            payload: {
-                content: (
-                    <>
-                        <h3 className='font-semibold border-b-[1px] border-slate-300 px-4 py-4 text-center'>Are you sure you want to delete the task ?</h3>
-                        <div className="flex px-8  pt-4 justify-center items-center border-t-[1px] border-slate-300 gap-x-4">
-                            <button type='button' className='bg-slate-100 text-slate-1000 border-[1px] border-slate-400 rounded-md px-4 py-1'
-                                onClick={() => dispatch({ type: 'MODAL', payload: { content: '', show: false } })}>Cancel</button>
-                            <button className='bg-red-500 text-white rounded-md px-4 py-1'>Delete</button>
-                        </div>
-                    </>
-                ),
-                show: true
-            }
-        })
-
-        return
-        dispatch({
-            type: 'DELETE',
-            payload: id
-        })
-        dispatch({
-            type: 'SET'
+            payload: content
         })
     }
 
@@ -100,7 +100,7 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
                                 </>
                             }
 
-                            <button className='hover:bg-slate-200  cursor-pointer px-5 py-3 flex gap-x-3 ' onClick={() => editHandler(id)}>
+                            <button className='hover:bg-slate-200  cursor-pointer px-5 py-3 flex gap-x-3 ' onClick={(e) => editHandler(e, id)}>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="#000" height="16" width="16" viewBox="0 0 512 512"><path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z" /></svg>
                                 <span>Edit Task</span>
                             </button>
