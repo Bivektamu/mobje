@@ -39,8 +39,7 @@ const AddForm = ({ setBtns, btns }) => {
             type: 'ADD',
             payload: formData
         })
-        dispatch({ type: 'SET' })
-        setBtns({ ...btns, addBtn: { isClicked: false, status: 'toDo' } })
+        setBtns({ ...btns, addBtn: { isClicked: false, status: '' } })
     }
 
     const handleInputChange = e => {

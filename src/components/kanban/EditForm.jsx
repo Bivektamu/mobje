@@ -42,7 +42,6 @@ const EditForm = ({ setBtns, taskId }) => {
             type: 'EDIT',
             payload: formData
         })
-        dispatch({ type: 'SET' })
         setBtns(prev => ({ ...prev, editBtn: { isClicked: false, id: '' } }))
     }
 

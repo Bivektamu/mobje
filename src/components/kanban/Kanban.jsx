@@ -18,28 +18,29 @@ const Kanban = () => {
     const [isDragged, setDragged] = useState(false)
     const [activeCol, setActiveCol] = useState()
     const [isClicked, setIsClicked] = useState({
-        state:false,
+        state: false,
         task: '',
-        time:(new Date()).getTime()
+        time: (new Date()).getTime()
     })
 
     const [modal, setModal] = useState({})
 
-    useEffect(()=> {
-        if(modal && Object.keys(modal).length > 0) {
+    useEffect(() => {
+        if (modal && Object.keys(modal).length > 0) {
             dispatch({
                 type: 'MODAL',
                 payload: modal
             })
         }
         else {
+            console.log('popu')
             dispatch({
                 type: 'MODAL',
-                payload: ''
+                payload: {}
             })
         }
     }, [modal])
-    
+
 
     const [btns, setBtns] = useState({
         isTaskOpBtnClicked: {
@@ -59,7 +60,7 @@ const Kanban = () => {
     useEffect(() => {
         if (tasks) {
             let tempTaskList = { toDo: [], inProgress: [], done: [] }
-            
+
             const sortedTasks = sortTasks(tasks)
             sortedTasks.map(t => {
                 tempTaskList = { ...tempTaskList, [t.status]: [...(tempTaskList[t.status] || []), t] }
@@ -70,25 +71,24 @@ const Kanban = () => {
 
     const { editBtn, addBtn } = btns
 
-    useEffect(()=> {
-        let content;
-        if(addBtn.isClicked) {
+    useEffect(() => {
+        if (addBtn.isClicked) {
             setModal(<AddForm status='toDo' btns={btns} setBtns={setBtns} />)
         }
-        else if(editBtn.isClicked) {
+        else if (editBtn.isClicked) {
             setModal(<EditForm taskId={editBtn.id} btns={btns} setBtns={setBtns} />)
         }
         else {
-           setModal({})
+
+            setModal({})
         }
 
     }, [addBtn, editBtn])
-    
-    const {task} = isClicked
 
-    useEffect(()=> {
-        console.log(task)
-        if(task && task !=='') {
+    const { task } = isClicked
+
+    useEffect(() => {
+        if (task && task !== '') {
             console.log(task)
             setModal(<TaskDetail closeModal={setIsClicked} task={task} />)
         }
@@ -109,7 +109,6 @@ const Kanban = () => {
             setDraggedTask({ ...draggedTask, task: {} })
             return setActiveCol('')
         }
-        console.log(activeCol, draggedTask.task)
         const newTask = draggedTask.task
         newTask.status = activeCol
         dispatch({
@@ -128,20 +127,19 @@ const Kanban = () => {
             return
         }
         const diff = { x: e.clientX - cords.x, y: e.clientY - cords.y }
-        
+
         // if(diff.x == 0 && diff.y== 0) {
         //     return
         // }
-        
+
         const kanban = document.getElementById('kanban-board').getBoundingClientRect()
 
-        if (diff.x == 0 && diff.y== 0) {
+        if (diff.x == 0 && diff.y == 0) {
             return
         }
 
         if (e.clientX > kanban.right || e.clientX < kanban.left || e.clientY < kanban.top || e.clientY > kanban.bottom) {
             setActiveCol('')
-            // return dragStop(e)
         }
 
         else if (e.clientX < kanban.left + kanban.width / 3) {
@@ -154,7 +152,7 @@ const Kanban = () => {
             setActiveCol('done')
         }
 
-      
+
         setCords({ ...cords, x: e.clientX, y: e.clientY })
         setDraggedTask({ ...draggedTask, x: draggedTask.x + diff.x, y: draggedTask.y + diff.y })
     }
@@ -162,7 +160,7 @@ const Kanban = () => {
     const startDrag = (e, task) => {
         e.preventDefault()
         e.stopPropagation()
-        setIsClicked((prev)=> ({...prev, time: (new Date()).getTime()}))
+        setIsClicked((prev) => ({ ...prev, time: (new Date()).getTime() }))
         setDragged(true)
         setDraggedTask({ ...draggedTask, x: (e.currentTarget).getBoundingClientRect().left, y: (e.currentTarget).getBoundingClientRect().top, task })
         setCords({ ...cords, x: e.clientX, y: e.clientY })
@@ -171,7 +169,7 @@ const Kanban = () => {
     const handleAllBtns = (e) => {
         setTimeout(() => {
             if (e.target.nodeName !== 'Button') {
-                setBtns((prev) => ({ ...prev, isTaskOpBtnClicked: {isClicked: false, clickedTaskId: ''} }))
+                setBtns((prev) => ({ ...prev, isTaskOpBtnClicked: { isClicked: false, clickedTaskId: '' } }))
             }
         }, 1)
     }
@@ -179,8 +177,6 @@ const Kanban = () => {
     // return <>asdf</>
     return (
         <>
-            {/* {addBtn.isClicked && <AddForm status='toDo' btns={btns} setBtns={setBtns} />} */}
-            {/* {editBtn.isClicked && <EditForm taskId={editBtn.id} setBtns={setBtns} />} */}
 
 
             <div className='mx-auto flex items-center justify-center py-10  h-screen' onMouseMove={e => mouseTracker(e)} onMouseUp={e => dragStop(e)} onClick={handleAllBtns}>
@@ -201,7 +197,7 @@ const Kanban = () => {
                                 }
 
                                 {Object.keys(taskList).map(k =>
-                                    <div key={k} className={`select-none flex flex-col gap-y-6 pb-4 ${(isDragged && activeCol===k) && 'border-[1px] border-dashed border-slate-400'}`} ref={e => dndRefs.current[0] = e} >
+                                    <div key={k} className={`select-none flex flex-col gap-y-6 pb-4 ${(isDragged && activeCol === k) && 'border-[1px] border-dashed border-slate-400'}`} ref={e => dndRefs.current[0] = e} >
                                         <h2 className='flex justify-between  text-lg mb-2 font-semibold border-b-[1px] border-slate-300 p-2'>
                                             <p>
                                                 <span className='mr-4'>{k === 'toDo' ? 'To do' : k === 'done' ? 'Done' : 'In Progress'}</span>

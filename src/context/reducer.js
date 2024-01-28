@@ -1,60 +1,84 @@
 const reducer = (state, action) => {
-  let task = {}, tasksStorage = {}, tasksInString= ''
+  let task = {},
+    newState = {},
+    tasksStorage = {},
+    storeInString = "";
+
+  const upDateLocalStore = (newState) => {
+    let store = newState;
+    delete store.modal;
+    store = JSON.stringify(store);
+    localStorage.setItem("store", store);
+  };
   switch (action.type) {
     case "ADD":
-      return {
+      newState = {
         ...state,
         tasks: [...state.tasks, action.payload],
       };
+      upDateLocalStore(newState);
+      return newState;
+
+      case "ADD_LIST":
+        newState = {
+          ...state,
+          shoppingList: [...state.shoppingList, action.payload],
+        };
+        upDateLocalStore(newState);
+        return newState;
 
     case "TASK_DONE":
-      task = state.tasks.filter(t=>t.id === action.payload)[0]
-      task.status = 'done'
-      return {
+      task = state.tasks.filter((t) => t.id === action.payload)[0];
+      task.status = "done";
+
+      newState = {
         ...state,
-        tasks: [...state.tasks.filter(t=>t.id!==action.payload), task],
+        tasks: [...state.tasks.filter((t) => t.id !== action.payload), task],
       };
+      upDateLocalStore(newState);
+      return newState;
 
     case "EDIT":
-        return {
-          ...state,
-          tasks: [...state.tasks.filter(t=>t.id!==action.payload.id), action.payload],
-        };
+      newState = {
+        ...state,
+        tasks: [
+          ...state.tasks.filter((t) => t.id !== action.payload.id),
+          action.payload,
+        ],
+      };
+      upDateLocalStore(newState);
+      return newState;
 
     case "GET":
-      if (localStorage.getItem("tasks")) {
-        tasksStorage = JSON.parse(localStorage.getItem("tasks"));
-        return {
-          ...state,
-          tasks: [...tasksStorage],
-        };
+      if (localStorage.getItem("store")) {
+        const store = JSON.parse(localStorage.getItem("store"));
+        return store;
+      } else {
+        return state;
       }
-      return {
-        ...state,
-        tasks: [],
-      };
-      case 'SET':
-        tasksInString= (state.tasks).length > 0 ? JSON.stringify(state.tasks) : ''
-        localStorage.setItem('tasks', tasksInString)
-         return state
 
     case "DELETE":
-      return {
+      newState = {
         ...state,
         tasks: [...state.tasks.filter((task) => task.id !== action.payload)],
       };
+      upDateLocalStore(newState);
+      return newState
 
-      case 'DND':
-        return {
-          ...state, 
-          tasks: [...state.tasks.filter(t=>t.id !== action.payload.id), action.payload]
-        }
-      case 'MODAL': {
-        return {
-          ...state,
-          modal: action.payload
-        }
-      }
+    case "DND":
+      return {
+        ...state,
+        tasks: [
+          ...state.tasks.filter((t) => t.id !== action.payload.id),
+          action.payload,
+        ],
+      };
+    case "MODAL": {
+      return {
+        ...state,
+        modal: action.payload,
+      };
+    }
 
     default:
       console.log("Nothing done");

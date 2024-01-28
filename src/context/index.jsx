@@ -1,17 +1,23 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useState, useContext, useEffect, useReducer } from "react";
 import reducer from "./reducer";
 import PropTypes from 'prop-types'
 
 const TaskContext = createContext();
 
 export const useTaskContext = () => useContext(TaskContext);
+
 const initialState = {
   tasks: [],
+  shoppingList: [],
   modal: {}
 };
 
-const TaskProvider = ({ children }) => {
+
+const StoreProvider = ({ children }) => {
+
   const [state, dispatch] = useReducer(reducer, initialState);
+
+
   return (
     <TaskContext.Provider value={[state, dispatch]}>
       {children}
@@ -20,8 +26,8 @@ const TaskProvider = ({ children }) => {
 };
 // 
 // 
-TaskProvider.propTypes = {
+StoreProvider.propTypes = {
   children: PropTypes.element.isRequired
 }
 
-export  {TaskProvider}
+export { StoreProvider }

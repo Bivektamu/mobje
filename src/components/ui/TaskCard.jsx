@@ -30,7 +30,6 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
             ...prev, isTaskOpBtnClicked: { isClicked: false, clickedTaskId: '' }
         }))
         dispatch({ type: 'TASK_DONE', payload: id })
-        dispatch({ type: 'SET' })
     }
 
 
@@ -47,7 +46,6 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
                 id: id
             }
         }))
-        // setEditBtn(true)
     }
 
 
@@ -56,7 +54,7 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
         const content = (
             <>
                 <h3 className='font-semibold border-b-[1px] border-slate-300 px-4 py-4 text-center'>Are you sure you want to delete the task ?</h3>
-                <div className="flex px-8  pt-4 justify-center items-center border-t-[1px] border-slate-300 gap-x-4">
+                <div className="flex px-8  pt-4 justify-center items-center border-t-[1px] border-slate-300 gap-x-4 pb-6">
                     <button type='button' className='bg-slate-100 text-slate-1000 border-[1px] border-slate-400 rounded-md px-4 py-1'
                         onClick={() => dispatch({ type: 'MODAL', payload: {} })}>Cancel</button>
                     <button
@@ -64,7 +62,6 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
                         onClick={() => {
                             dispatch({ type: 'DELETE', payload: id })
                             dispatch({ type: 'MODAL', payload: {} })
-                            dispatch({ type: 'SET' })
                         }}
                     >Delete</button>
                 </div>
