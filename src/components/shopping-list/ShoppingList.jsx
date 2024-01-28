@@ -2,24 +2,19 @@ import React, { useState, useEffect } from 'react'
 import { useTaskContext } from '../../context'
 import PropTypes from 'prop-types'
 import AddForm from '../kanban/AddForm'
-import AddList from '../kanban/AddList'
+import AddList from './AddList'
 
 const ShoppingList = props => {
     const [btns, setBtns] = useState({
-        addBtn: false,
-        edit: '',
-        edit: '',
-        dots:  ''
+        action: '',
+        payload: ''
+
     })
     const [modal, setModal] = useState({})
     const [{ shoppingList }, dispatch] = useTaskContext()
 
     useEffect(() => {
-        console.log(shoppingList)
-    }, [shoppingList])
-
-
-    useEffect(() => {
+        console.log(modal)
         if (modal && Object.keys(modal).length > 0) {
             dispatch({
                 type: 'MODAL',
@@ -34,29 +29,34 @@ const ShoppingList = props => {
         }
     }, [modal])
 
-    const { addBtn } = btns
+    const { action, payload } = btns
 
     useEffect(() => {
-        if (addBtn)
-            setModal(<AddList setBtns={setBtns} btns={btns} />)
-        else
-            setModal({})
-    }, [addBtn])
 
-    const dotsClickHandler = (e, slug) => {
-        e.stopPropagation()
-        setBtns({...btns, dots: slug})
-    }
+        switch (action) {
+            case 'ADD':
+                return setModal(<AddList setBtns={setBtns} btns={btns} />)
+            default:
+                return setModal({})
+                
+                // setModal({})
+        }
+    }, [action, payload])
+
 
     const editHandler = (e, slug) => {
         e.stopPropagation()
-        setBtns({...btns, edit:  slug})
+        setBtns({ ...btns, edit: slug })
+    }
+    const onClickHandler = (e, data) => {
+        e.stopPropagation()
+        setBtns({...data})
     }
 
-
+    
 
     return (
-        <div className='mx-auto flex items-center justify-center py-10  h-screen' >
+        <div className='mx-auto flex items-center justify-center py-10  h-screen' onClick={(e) => onClickHandler(e, {action:'', payload:''})}>
             <div>
                 <h1 className="text-4xl font-semibold mb-8 text-center">Shopping List</h1>
                 <div className="flex gap-x-10">
@@ -66,9 +66,9 @@ const ShoppingList = props => {
                         >
                             {s.title}
 
-                            <div className='relative' >
-                                <button className='w-[20px] leading-[0px] h-[20px] rounded-full text-center  font-bold pb-2' onClick={(e) => dotsClickHandler(e, s.slug)}>...</button>
-                                {(dots.state && dots.slug === s.slug) &&
+                            <div className='absolute top-0 right-3' >
+                                <button className='w-[20px] leading-[0px] h-[20px] rounded-full text-center  font-bold pb-2' onClick={(e) => onClickHandler(e, { action: 'OPTIONS', payload: s.slug })}>...</button>
+                                {(action === 'OPTIONS' && payload === s.slug) &&
                                     <div className="absolute z-10 shadow-md shadow-slate-400 bg-white w-[140px] block  rounded-md text-xs flex flex-col  top-[30px] -right-[70px]">
 
                                         <button className='hover:bg-slate-200  cursor-pointer px-5 py-3 flex gap-x-3 ' onClick={(e) => editHandler(e, id)}>
@@ -77,7 +77,7 @@ const ShoppingList = props => {
                                         </button>
                                         <button className='hover:bg-slate-200  px-5 py-3 flex gap-x-3 text-red-500 cursor-pointer' onClick={(e) => deleteHandler(e, id)}>
                                             <svg xmlns="http://www.w3.org/2000/svg" className='fill-red-500' height="16" width="14" viewBox="0 0 448 512"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" /></svg>
-                                            <span>Delete Task</span>
+                                            <span>Delete List</span>
                                         </button>
                                     </div>
                                 }
@@ -88,7 +88,7 @@ const ShoppingList = props => {
                     )}
 
                     <button type='button'
-                        onClick={() => { setBtns({ ...btns, addBtn: true }) }}
+                        onClick={(e) => onClickHandler(e, {action:'ADD', payload:''})}
                         className={`select-none relative  w-[180px] mx-auto  bg-white  rounded-md text-black cursor-pointer text-center p-6 shadow-lg shadow-slate-500/50`} >
                         <h2 className='text-md mb-4 font-light'>Add Shopping list</h2>
                         <span className='w-8 m-auto h-8 block relative after:content-[""] after:absolute after:w-1 after:h-full after:bg-slate-300 after:left-0 after:right-0 after:m-auto before:content-[""] before:absolute before:h-1 before:w-full before:bg-slate-300 before:left-0 before:right-0 before:top-0 before:bottom-0 before:m-auto after:shadow after:shadow-slate-500/50 before:shadow before:shadow-slate-500/50 '></span>
