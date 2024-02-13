@@ -1,5 +1,8 @@
+import {ADD_TASK} from './types'
+
 const reducer = (state, action) => {
   let task = {},
+  list = {},
     newState = {},
     tasksStorage = {},
     storeInString = "";
@@ -11,11 +14,15 @@ const reducer = (state, action) => {
     localStorage.setItem("store", store);
   };
   switch (action.type) {
-    case "ADD":
+    case ADD_TASK:
+      list = state.taskList.filter(t=>t.slug === action.payload.stage)[0]
+      list.tasks = [...list.tasks, action.payload]
+
       newState = {
         ...state,
-        tasks: [...state.tasks, action.payload],
+        taskList: [list, ...state.taskList.filter(t=>t.slug !== list.slug)]
       };
+
       upDateLocalStore(newState);
       return newState;
 

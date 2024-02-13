@@ -7,7 +7,24 @@ const TaskContext = createContext();
 export const useTaskContext = () => useContext(TaskContext);
 
 const initialState = {
-  tasks: [],
+  taskList: [
+    {
+      title: 'To Do',
+      slug: 'toDo',
+      tasks:[]
+    },
+    {
+      title: 'In Progress',
+      slug: 'inProgress',
+      tasks:[]
+    },
+    {
+      title: 'Complete',
+      slug: 'complete',
+      tasks:[]
+    }
+
+  ],
   shoppingList: [],
   modal: {}
 };
@@ -19,7 +36,7 @@ const StoreProvider = ({ children }) => {
 
 
   return (
-    <TaskContext.Provider value={[state, dispatch]}>
+    <TaskContext.Provider value={{state, dispatch}}>
       {children}
     </TaskContext.Provider>
   );

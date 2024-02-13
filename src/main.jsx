@@ -5,9 +5,10 @@ import { StoreProvider } from './context';
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <StoreProvider>
       <App />
     </StoreProvider>
-  </React.StrictMode>,
+  // </React.StrictMode>
+  ,
 )

@@ -1,17 +1,34 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTaskContext } from '../../context'
+import PropTypes from 'prop-types'
+import {ADD_TASK} from '../../context/types'
 
 const AddForm = ({ setBtns, btns }) => {
-    const [{ tasks }, dispatch] = useTaskContext()
+    const { state,  dispatch} = useTaskContext()
     const [errorsUI, setErrorsUI] = useState([])
     const [showError, setShowError] = useState(false)
+    const {taskList} = state
+    const [tasks, setTasks] = useState([])
+    useEffect(()=> {
+        if(taskList) {
+            let temp = []
+            taskList.map(t=>{
+                if(t.tasks.length > 0) {
+                    temp = [...temp, ...tasks]
+                }
+            })
+            if(temp.length>0) {
+                setTasks(...temp)
+            }
+        }
+    }, [taskList])
 
     const [formData, setFormData] = useState({
-        id: `${status.slice(0, 1)}_${(new Date()).getTime()}`,
+        id: `${btns.addBtn.stage.slice(0, 1)}_${(new Date()).getTime()}`,
         title: '',
         description: '',
         due: '',
-        status: btns.addBtn.status
+        stage: btns.addBtn.stage
     })
 
     const { title, description, due } = formData
@@ -20,7 +37,7 @@ const AddForm = ({ setBtns, btns }) => {
         let temp = []
 
         Object.entries(formData).forEach(([key, value]) => {
-            if (key !== 'id' && key !== 'status' && value === '') {
+            if (key !== 'id' && key !== 'stage' && value === '') {
                 temp = [...temp, { [key]: `Please add ${key}` }]
             }
         })
@@ -29,6 +46,7 @@ const AddForm = ({ setBtns, btns }) => {
 
     const submitHandler = e => {
         e.preventDefault()
+        e.stopPropagation()
         if (!showError)
             setShowError(true)
 
@@ -36,10 +54,10 @@ const AddForm = ({ setBtns, btns }) => {
             return
         }
         dispatch({
-            type: 'ADD',
+            type: ADD_TASK,
             payload: formData
         })
-        setBtns({ ...btns, addBtn: { isClicked: false, status: '' } })
+        return setBtns({ ...btns, addBtn: { isClicked: false, stage: '' } })
     }
 
     const handleInputChange = e => {
@@ -47,15 +65,15 @@ const AddForm = ({ setBtns, btns }) => {
             setErrorsUI(prevErrors => [...prevErrors.filter(er => !er[e.target.name]), { [e.target.name]: `Please add ${e.target.name}` }])
         }
 
-        else if (e.target.name === 'title' && e.target.value !== '') {
-            const findIfTitleExists = tasks.filter(t => t.title === e.target.value)
-            if (findIfTitleExists.length > 0) {
-                setErrorsUI(prevErrors => [...prevErrors.filter(ele => !ele[e.target.name]), { title: 'Title already exists' }])
-            }
-            else {
-                setErrorsUI(prevErrors => [...prevErrors.filter(ele => !ele[e.target.name])])
-            }
-        }
+        // else if (e.target.name === 'title' && e.target.value !== '') {
+        //     const findIfTitleExists = tasks.filter(t => t.title === e.target.value)
+        //     if (findIfTitleExists.length > 0) {
+        //         setErrorsUI(prevErrors => [...prevErrors.filter(ele => !ele[e.target.name]), { title: 'Title already exists' }])
+        //     }
+        //     else {
+        //         setErrorsUI(prevErrors => [...prevErrors.filter(ele => !ele[e.target.name])])
+        //     }
+        // }
         else if (e.target.name === 'due' && e.target.value !== '') {
             const currDate = new Date()
             const inputDateArr = e.target.value.split('-')
@@ -77,7 +95,7 @@ const AddForm = ({ setBtns, btns }) => {
         <div className=' bg-white  w-full rounded-lg'>
             <h3 className='font-semibold border-b-[1px] border-slate-300 px-8 py-4 flex justify-between items-center'>
                 <span>Add new Task</span>
-                <button className='cursor-pointer relative w-4 h-4  after:content-[""] after:absolute after:bg-slate-600 after:w-full after:h-[2px] after:left-0 after:rotate-45 before:content-[""] before:absolute before:bg-slate-600 before:w-full before:h-[2px] before:left-0 before:-rotate-45' onClick={() => setBtns({ ...btns, addBtn: { isClicked: false, status: 'toDo' } })
+                <button className='cursor-pointer relative w-4 h-4  after:content-[""] after:absolute after:bg-slate-600 after:w-full after:h-[2px] after:left-0 after:rotate-45 before:content-[""] before:absolute before:bg-slate-600 before:w-full before:h-[2px] before:left-0 before:-rotate-45' onClick={() => setBtns({ ...btns, addBtn: { isClicked: false, stage: 'toDo' } })
                 }></button>
             </h3>
             <form className='flex flex-col gap-y-6  mb-4 py-4' onSubmit={e => submitHandler(e)}>
@@ -97,13 +115,18 @@ const AddForm = ({ setBtns, btns }) => {
                     {showError && errorsUI.filter(e => e.due).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e => e.due)[0].due + ' date'}</span>}
                 </div>
                 <div className="flex px-8  pt-4 justify-end items-center border-t-[1px] border-slate-300 gap-x-4">
-                    <button type='button' className='bg-slate-100 text-slate-1000 border-[1px] border-slate-400 rounded-md px-4 py-1' onClick={() => setBtns({ ...btns, addBtn: { isClicked: false, status: 'toDo' } })
+                    <button type='button' className='bg-slate-100 text-slate-1000 border-[1px] border-slate-400 rounded-md px-4 py-1' onClick={() => setBtns({ ...btns, addBtn: { isClicked: false, stage: 'toDo' } })
                     }>Cancel</button>
                     <button className='bg-blue-500 text-white rounded-md px-4 py-1'>Save</button>
                 </div>
             </form>
         </div>
     )
+}
+
+AddForm.propTypes =  {
+    setBtns:PropTypes.func.isRequired,
+    btns: PropTypes.object.isRequired
 }
 
 export default AddForm

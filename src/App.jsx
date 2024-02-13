@@ -7,7 +7,7 @@ import ShoppingList from './components/shopping-list/ShoppingList';
 
 function App() {
 
-  const [state, dispatch] = useTaskContext()
+  const {state, dispatch} = useTaskContext()
   const {modal} = state
 
   useEffect(()=> {
@@ -22,8 +22,8 @@ function App() {
         </Modal>
       }
       <div className="App bg-slate-200">
-        {/* <Kanban /> */}
-        <ShoppingList />
+        <Kanban />
+        {/* <ShoppingList /> */}
       </div>
     </>
 
