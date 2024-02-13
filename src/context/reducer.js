@@ -1,8 +1,8 @@
-import {ADD_TASK} from './types'
+import { ADD_TASK, TASK_COMPLETE } from "./types";
 
 const reducer = (state, action) => {
   let task = {},
-  list = {},
+    list = {},
     newState = {},
     tasksStorage = {},
     storeInString = "";
@@ -15,32 +15,44 @@ const reducer = (state, action) => {
   };
   switch (action.type) {
     case ADD_TASK:
-      list = state.taskList.filter(t=>t.slug === action.payload.stage)[0]
-      list.tasks = [...list.tasks, action.payload]
+      list = state.taskList.filter((t) => t.slug === action.payload.stage)[0];
+      list = {...list, tasks: list.tasks.map(task=>({...task}))}
+      list.tasks = [...list.tasks, action.payload];
 
       newState = {
         ...state,
-        taskList: [list, ...state.taskList.filter(t=>t.slug !== list.slug)]
+        taskList: [list, ...state.taskList.filter((t) => t.slug !== list.slug)],
       };
 
       upDateLocalStore(newState);
       return newState;
 
-      case "ADD_LIST":
-        newState = {
-          ...state,
-          shoppingList: [...state.shoppingList, action.payload],
-        };
-        upDateLocalStore(newState);
-        return newState;
+    case TASK_COMPLETE:
 
-    case "TASK_DONE":
-      task = state.tasks.filter((t) => t.id === action.payload)[0];
-      task.status = "done";
+      const {id, stage} = action.payload
+       newState = {
+        ...state,
+        taskList: state.taskList.map(list=>({
+          ...list,
+          tasks: list.tasks.map(task=>({
+            ...task,
+          }))
+        }))
+      }
+       list = newState.taskList.filter(l=>l.slug === stage)[0]
+       task = list.tasks.filter(t=>t.id === id)[0]
+       task.stage = 'complete'
+       list.tasks = [...list.tasks.filter(t=>t.id !== id)]
+       list = newState.taskList.filter(l=>l.slug === 'complete')[0]
+       list.tasks = [...list.tasks, task]
 
+      upDateLocalStore(newState);
+      return newState;
+
+    case "ADD_LIST":
       newState = {
         ...state,
-        tasks: [...state.tasks.filter((t) => t.id !== action.payload), task],
+        shoppingList: [...state.shoppingList, action.payload],
       };
       upDateLocalStore(newState);
       return newState;
@@ -70,7 +82,7 @@ const reducer = (state, action) => {
         tasks: [...state.tasks.filter((task) => task.id !== action.payload)],
       };
       upDateLocalStore(newState);
-      return newState
+      return newState;
 
     case "DND":
       return {

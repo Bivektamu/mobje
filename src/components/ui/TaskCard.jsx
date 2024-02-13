@@ -2,9 +2,10 @@ import { useState, useEffect, useDebugValue } from 'react'
 import { useTaskContext } from '../../context'
 import { numToMonthName } from '../../utils'
 import PropTypes from 'prop-types'
+import {TASK_COMPLETE} from '../../context/types'
 
 const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isClicked }) => {
-    const {state, dispatch} = useTaskContext()
+    const {dispatch} = useTaskContext()
     const dueDate = {
         month: numToMonthName(task.due.split('-')[1]),
         day: task.due.split('-')[2],
@@ -26,10 +27,11 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
 
     const markDone = (e) => {
         e.stopPropagation()
+        console.log(id)
         setBtns((prev) => ({
             ...prev, isTaskOpBtnClicked: { isClicked: false, clickedTaskId: '' }
         }))
-        dispatch({ type: 'TASK_DONE', payload: id })
+        dispatch({ type: TASK_COMPLETE, payload: {id, stage} })
     }
 
 
@@ -75,9 +77,8 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
     }
 
 
-
     const { isTaskOpBtnClicked } = btns
-    const { id, title, status } = task
+    const { id, title, stage } = task
 
     return (
 
@@ -88,7 +89,7 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
                     <button className={`w-[20px] leading-[0px] h-[20px] rounded-full ${isTaskOpBtnClicked.isClicked ? 'bg-slate-200 border-[1px]':'hover:bg-slate-200 hover:border-[1px]'}  border-slate-500 text-center font-semibold flex items-center justify-center`} onClick={(e) => optionBtnHandler(e, id)}><span className='three-dots bg-slate-500 after:bg-slate-500 before:bg-slate-500'></span></button>
                     {(isTaskOpBtnClicked.isClicked && isTaskOpBtnClicked.clickedTaskId === id) &&
                         <div className="absolute z-10 shadow-md shadow-slate-400 bg-white w-[140px] block  rounded-md text-xs flex flex-col  top-[30px] -right-[70px]">
-                            {status !== 'done' &&
+                            {stage !== 'complete' &&
                                 <>
                                     <button className='hover:bg-slate-200  px-5 py-3 flex gap-x-3 ' onClick={markDone}>
                                         <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512" className='cursor-pointer' fill="#000"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>

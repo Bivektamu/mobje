@@ -11,13 +11,13 @@ const AddList = ({ setBtns, btns }) => {
         slug: '',
     })
 
-    const { title, id, slug } = formData
+    const { title} = formData
 
     useEffect(() => {
         let temp = []
 
         Object.entries(formData).forEach(([key, value]) => {
-            if (key !== 'id' && key !== 'status' && value === '') {
+            if (value === '') {
                 temp = [...temp, { [key]: `Please add ${key}` }]
             }
         })

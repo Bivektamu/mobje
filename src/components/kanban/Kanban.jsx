@@ -41,7 +41,6 @@ const Kanban = () => {
 
     useEffect(() => {
         if (taskList && taskList.length > 0) {
-            console.log(taskList)
             const total = taskList.reduce((s, t) =>  {return s + t.tasks.length}, 0)
             if (total > 0) {
                 setTotalTasks(total)
@@ -207,8 +206,8 @@ const Kanban = () => {
                                             <span className='mr-4'>{k.slug === 'toDo' ? 'To do' : k.slug === 'inProgress' ? 'In Progress': 'Done'}</span>
                                             <span className='text-sm text-slate-500'>{k.tasks.length}</span>
                                         </p>
-                                        {k !== 'done' &&
-                                            <button type='button' className="flex items-center justify-center text-slate-800 pb-[3px] w-6 h-6 rounded-full border-[1px] border-slate-400" onClick={() => setBtns({ ...btns, addBtn: { isClicked: true, stage: k } })}>+</button>
+                                        {k.slug !== 'complete' &&
+                                            <button type='button' className="flex items-center justify-center text-slate-800 pb-[3px] w-6 h-6 rounded-full border-[1px] border-slate-400" onClick={() => setBtns({ ...btns, addBtn: { isClicked: true, stage: k.slug } })}>+</button>
                                         }
                                     </h2>
                                     {k.tasks.length > 0 &&k.tasks.map((task) =>

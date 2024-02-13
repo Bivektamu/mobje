@@ -3,6 +3,7 @@ import { useTaskContext } from '../../context'
 import PropTypes from 'prop-types'
 import AddForm from '../kanban/AddForm'
 import AddList from './AddList'
+// import EditList from './EditList'
 
 const ShoppingList = props => {
     const [btns, setBtns] = useState({
@@ -14,7 +15,6 @@ const ShoppingList = props => {
     const [{ shoppingList }, dispatch] = useTaskContext()
 
     useEffect(() => {
-        console.log(modal)
         if (modal && Object.keys(modal).length > 0) {
             dispatch({
                 type: 'MODAL',
@@ -35,28 +35,34 @@ const ShoppingList = props => {
 
         switch (action) {
             case 'ADD':
-                return setModal(<AddList setBtns={setBtns} btns={btns} />)
-            default:
-                return setModal({})
+                setModal(<AddList setBtns={setBtns} btns={btns} />)
+                break;
                 
-                // setModal({})
+            // case 'EDIT':
+            //     setModal(<EditList setBtns={setBtns} slug={slug} />)
+            //     break;
+            default:
+                setModal({})
+                break;
+
+            // setModal({})
         }
     }, [action, payload])
 
 
     const editHandler = (e, slug) => {
         e.stopPropagation()
-        setBtns({ ...btns, edit: slug })
+        setBtns({ action:'EDIT', payload: slug })
     }
     const onClickHandler = (e, data) => {
         e.stopPropagation()
-        setBtns({...data})
+        setBtns({ ...data })
     }
 
-    
+
 
     return (
-        <div className='mx-auto flex items-center justify-center py-10  h-screen' onClick={(e) => onClickHandler(e, {action:'', payload:''})}>
+        <div className='mx-auto flex items-center justify-center py-10  h-screen' onClick={(e) => onClickHandler(e, { action: '', payload: '' })}>
             <div>
                 <h1 className="text-4xl font-semibold mb-8 text-center">Shopping List</h1>
                 <div className="flex gap-x-10">
@@ -88,7 +94,7 @@ const ShoppingList = props => {
                     )}
 
                     <button type='button'
-                        onClick={(e) => onClickHandler(e, {action:'ADD', payload:''})}
+                        onClick={(e) => onClickHandler(e, { action: 'ADD', payload: '' })}
                         className={`select-none relative  w-[180px] mx-auto  bg-white  rounded-md text-black cursor-pointer text-center p-6 shadow-lg shadow-slate-500/50`} >
                         <h2 className='text-md mb-4 font-light'>Add Shopping list</h2>
                         <span className='w-8 m-auto h-8 block relative after:content-[""] after:absolute after:w-1 after:h-full after:bg-slate-300 after:left-0 after:right-0 after:m-auto before:content-[""] before:absolute before:h-1 before:w-full before:bg-slate-300 before:left-0 before:right-0 before:top-0 before:bottom-0 before:m-auto after:shadow after:shadow-slate-500/50 before:shadow before:shadow-slate-500/50 '></span>
