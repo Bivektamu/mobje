@@ -2,10 +2,10 @@ import { useState, useEffect, useDebugValue } from 'react'
 import { useTaskContext } from '../../context'
 import { numToMonthName } from '../../utils'
 import PropTypes from 'prop-types'
-import {TASK_COMPLETE} from '../../context/types'
+import { TASK_COMPLETE, DELETE_TASK } from '../../context/types'
 
 const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isClicked }) => {
-    const {dispatch} = useTaskContext()
+    const { dispatch } = useTaskContext()
     const dueDate = {
         month: numToMonthName(task.due.split('-')[1]),
         day: task.due.split('-')[2],
@@ -31,7 +31,7 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
         setBtns((prev) => ({
             ...prev, isTaskOpBtnClicked: { isClicked: false, clickedTaskId: '' }
         }))
-        dispatch({ type: TASK_COMPLETE, payload: {id, stage} })
+        dispatch({ type: TASK_COMPLETE, payload: { id, stage } })
     }
 
 
@@ -62,7 +62,7 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
                     <button
                         className='bg-red-500 text-white rounded-md px-4 py-1'
                         onClick={() => {
-                            dispatch({ type: 'DELETE', payload: id })
+                            dispatch({ type: DELETE_TASK, payload: id })
                             dispatch({ type: 'MODAL', payload: {} })
                         }}
                     >Delete</button>
@@ -86,7 +86,9 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
             <div className='flex justify-between items-center border-b-[1px] border-slate-300 py-2 px-4' >
                 <p className='w-[130px] text-left' >{title.length < 14 ? title : title.slice(0, 14) + '...'}</p>
                 <div className='relative' >
-                    <button className={`w-[20px] leading-[0px] h-[20px] rounded-full ${isTaskOpBtnClicked.isClicked ? 'bg-slate-200 border-[1px]':'hover:bg-slate-200 hover:border-[1px]'}  border-slate-500 text-center font-semibold flex items-center justify-center`} onClick={(e) => optionBtnHandler(e, id)}><span className='three-dots bg-slate-500 after:bg-slate-500 before:bg-slate-500'></span></button>
+                    <button className={`w-[20px] leading-[0px] h-[20px] rounded-full ${isTaskOpBtnClicked.isClicked && isTaskOpBtnClicked.clickedTaskId === id ? 'bg-slate-200 border-[1px]' : 'hover:bg-slate-200 hover:border-[1px]'}  border-slate-500 text-center font-semibold flex items-center justify-center`} onClick={(e) => optionBtnHandler(e, id)}>
+                        <span className='three-dots bg-slate-500 after:bg-slate-500 before:bg-slate-500'></span>
+                    </button>
                     {(isTaskOpBtnClicked.isClicked && isTaskOpBtnClicked.clickedTaskId === id) &&
                         <div className="absolute z-10 shadow-md shadow-slate-400 bg-white w-[140px] block  rounded-md text-xs flex flex-col  top-[30px] -right-[70px]">
                             {stage !== 'complete' &&

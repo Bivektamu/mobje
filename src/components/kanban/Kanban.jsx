@@ -42,9 +42,7 @@ const Kanban = () => {
     useEffect(() => {
         if (taskList && taskList.length > 0) {
             const total = taskList.reduce((s, t) =>  {return s + t.tasks.length}, 0)
-            if (total > 0) {
                 setTotalTasks(total)
-            }
         }
     }, [taskList])
 

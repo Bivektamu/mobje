@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useTaskContext } from '../../context'
 
 const EditForm = ({ setBtns, taskId }) => {
-    const [{ tasks }, dispatch] = useTaskContext()
+    const {state, dispatch} = useTaskContext()
     const [showError, setShowError] = useState(false)
 
 
