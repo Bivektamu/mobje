@@ -6,6 +6,7 @@ import TaskCard from '../ui/TaskCard'
 import DraggedTask from './DraggedTask'
 import { sortTasks } from '../../utils'
 import TaskDetail from './TaskDetail'
+import {DRAG_AND_DROP} from '../../context/types'
 
 const Kanban = () => {
     const [totalTasks, setTotalTasks] = useState(0)
@@ -115,10 +116,9 @@ const Kanban = () => {
             return setActiveCol('')
         }
         const newTask = draggedTask.task
-        newTask.stage = activeCol
         dispatch({
-            type: 'DND',
-            payload: newTask
+            type: DRAG_AND_DROP,
+            payload: {newTask, newList: activeCol}
         })
         setActiveCol('')
         setDraggedTask({ ...draggedTask, task: {} })
@@ -132,10 +132,6 @@ const Kanban = () => {
             return
         }
         const diff = { x: e.clientX - cords.x, y: e.clientY - cords.y }
-
-        // if(diff.x == 0 && diff.y== 0) {
-        //     return
-        // }
 
         const kanban = document.getElementById('kanban-board').getBoundingClientRect()
 
@@ -154,7 +150,7 @@ const Kanban = () => {
             setActiveCol('inProgress')
         }
         else {
-            setActiveCol('done')
+            setActiveCol('complete')
         }
 
 
