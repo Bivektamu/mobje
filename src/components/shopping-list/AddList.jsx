@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useTaskContext } from '../../context'
+import {ADD_SHOPPING_LIST} from '../../context/types'
 
-const AddList = ({ setBtns, btns }) => {
-    const [{ shoppingList }, dispatch] = useTaskContext()
+const AddList = ({ setBtns }) => {
+    const {state, dispatch} = useTaskContext()
+    const { shoppingList } = state
     const [errorsUI, setErrorsUI] = useState([])
     const [showError, setShowError] = useState(false)
 
@@ -35,7 +37,7 @@ const AddList = ({ setBtns, btns }) => {
         }
         console.log(formData)
         dispatch({
-            type: 'ADD_LIST',
+            type: ADD_SHOPPING_LIST,
             payload: formData
         })
         setBtns({ ...btns, addBtn: false})
@@ -76,7 +78,7 @@ const AddList = ({ setBtns, btns }) => {
         <div className='w-full rounded-lg'>
             <h3 className='font-semibold border-b-[1px] border-slate-300 px-4 py-4 flex justify-between items-center'>
                 <span>Add new shopping list</span>
-                <button type='button' className='cursor-pointer relative w-4 h-4  after:content-[""] after:absolute after:bg-slate-600 after:w-full after:h-[2px] after:left-0 after:rotate-45 before:content-[""] before:absolute before:bg-slate-600 before:w-full before:h-[2px] before:left-0 before:-rotate-45' onClick={() => setBtns({ ...btns, addBtn: false })
+                <button type='button' className='cursor-pointer relative w-4 h-4  after:content-[""] after:absolute after:bg-slate-600 after:w-full after:h-[2px] after:left-0 after:rotate-45 before:content-[""] before:absolute before:bg-slate-600 before:w-full before:h-[2px] before:left-0 before:-rotate-45' onClick={() => setBtns({action:''})
                 }></button>
             </h3>
             <form className='flex flex-col gap-y-6  mb-4 py-4' onSubmit={e => submitHandler(e)}>
@@ -87,7 +89,7 @@ const AddList = ({ setBtns, btns }) => {
                 </div>
 
                 <div className="flex px-8  pt-4 justify-end items-center border-t-[1px] border-slate-300 gap-x-4">
-                    <button type='button' className='bg-slate-100 text-slate-1000 border-[1px] border-slate-400 rounded-md px-4 py-1' onClick={() => setBtns({ ...btns, addBtn: false })
+                    <button type='button' className='bg-slate-100 text-slate-1000 border-[1px] border-slate-400 rounded-md px-4 py-1' onClick={() => setBtns({ action: '' })
                     }>Cancel</button>
                     <button type='submit' className='bg-blue-500 text-white rounded-md px-4 py-1'>Save</button>
                 </div>

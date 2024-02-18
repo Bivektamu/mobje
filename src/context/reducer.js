@@ -5,6 +5,8 @@ import {
   DELETE_TASK,
   DRAG_AND_DROP,
   EDIT_TASK,
+  ADD_SHOPPING_LIST,
+  EDIT_SHOPPING_LIST,
 } from "./types";
 
 const reducer = (state, action) => {
@@ -57,10 +59,19 @@ const reducer = (state, action) => {
       upDateLocalStore(newState);
       return newState;
 
-    case "ADD_LIST":
+    case ADD_SHOPPING_LIST:
       newState = {
         ...state,
         shoppingList: [...state.shoppingList, action.payload],
+      };
+      upDateLocalStore(newState);
+      return newState;
+
+    case EDIT_SHOPPING_LIST:
+
+      newState = {
+        ...state,
+        shoppingList: [...state.shoppingList.filter(l=>l.slug!==action.payload.slug), action.payload],
       };
       upDateLocalStore(newState);
       return newState;
