@@ -4,26 +4,13 @@ import { numToMonthName } from '../../utils'
 import PropTypes from 'prop-types'
 import { TASK_COMPLETE, DELETE_TASK } from '../../context/types'
 
-const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isClicked }) => {
+const TaskCard = ({ task, stage, startDrag, draggedId, setBtns, btns, setIsClicked, isClicked }) => {
     const { dispatch } = useTaskContext()
     const dueDate = {
         month: numToMonthName(task.due.split('-')[1]),
         day: task.due.split('-')[2],
         year: task.due.split('-')[0]
     }
-
-    const onClick = (e, task) => {
-        e.stopPropagation()
-        e.preventDefault()
-
-        const newTime = (new Date()).getTime()
-        if (newTime - isClicked.time < 300) {
-            return setIsClicked({ time: newTime, state: true, task: task })
-        }
-        return setIsClicked({ time: newTime, state: false, task: '' })
-    }
-
-
 
     const markDone = (e) => {
         e.stopPropagation()
@@ -76,13 +63,12 @@ const TaskCard = ({ task, startDrag, draggedId, setBtns, btns, setIsClicked, isC
         })
     }
 
-
     const { isTaskOpBtnClicked } = btns
-    const { id, title, stage } = task
+    const { id, title } = task
 
     return (
 
-        <div key={id} className={`select-none relative  w-[180px] mx-auto  bg-white  rounded-md text-black cursor-pointer  ${draggedId === id && 'opacity-0'}`} onClick={e => onClick(e, task)} onMouseDown={(e) => { startDrag(e, task) }}>
+        <div key={id} className={`select-none relative  w-[180px] mx-auto  bg-white  rounded-md text-black cursor-pointer  ${draggedId === id && 'opacity-0'}`}  onMouseDown={(e) => { startDrag(e, task) }}>
             <div className='flex justify-between items-center border-b-[1px] border-slate-300 py-2 px-4' >
                 <p className='w-[130px] text-left' >{title.length < 14 ? title : title.slice(0, 14) + '...'}</p>
                 <div className='relative' >

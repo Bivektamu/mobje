@@ -1,4 +1,11 @@
-import { ADD_TASK, TASK_COMPLETE, DELETE_TASK, DRAG_AND_DROP, EDIT } from "./types";
+import { sortLists } from "../utils";
+import {
+  ADD_TASK,
+  TASK_COMPLETE,
+  DELETE_TASK,
+  DRAG_AND_DROP,
+  EDIT_TASK,
+} from "./types";
 
 const reducer = (state, action) => {
   let task = {},
@@ -15,14 +22,15 @@ const reducer = (state, action) => {
   };
   switch (action.type) {
     case ADD_TASK:
-      console.log(state);
       list = state.taskList.filter((t) => t.slug === action.payload.stage)[0];
       list = { ...list, tasks: list.tasks.map((task) => ({ ...task })) };
-      list.tasks = [...list.tasks, action.payload];
+      list.tasks = [...list.tasks, action.payload.formData];
+      list = [list, ...state.taskList.filter((t) => t.slug !== list.slug)];
+      list = sortLists(list);
 
       newState = {
         ...state,
-        taskList: [list, ...state.taskList.filter((t) => t.slug !== list.slug)],
+        taskList: list,
       };
 
       upDateLocalStore(newState);
@@ -57,21 +65,23 @@ const reducer = (state, action) => {
       upDateLocalStore(newState);
       return newState;
 
-    case EDIT:
-      console.log(action.payload)
+    case EDIT_TASK:
+      console.log(action.payload);
+
+      list = [
+        ...state.taskList.map((l) => ({
+          ...l,
+          tasks: l.tasks.map((t) =>
+            t.id === action.payload.id ? action.payload : t
+          ),
+        })),
+      ];
       newState = {
         ...state,
-        taskList: [
-          ...state.taskList.map(l=>({
-            ...l,
-            tasks: [...l.tasks.map(t=>l.slug === action.payload.stage && t.id === action.payload.id)?action.payload:l.slug===action.payload.stage?]
-            // [...l.tasks.map((t) => t.id === action.payload.id)]
-          }))
-          
-        ],
+        taskList: [...list],
       };
-      // upDateLocalStore(newState);
-      return state;
+      upDateLocalStore(newState);
+      return newState;
 
     case "GET":
       if (localStorage.getItem("store")) {
@@ -99,20 +109,23 @@ const reducer = (state, action) => {
       return newState;
 
     case DRAG_AND_DROP:
-      const {newTask, newList} = action.payload
-      console.log(newTask, newList)
-       newState = {
+      const { newTask, newList } = action.payload;
+      console.log(newTask, newList);
+      newState = {
         ...state,
         taskList: [
           ...state.taskList.map((l) => ({
             ...l,
-            tasks: l.slug === newTask.stage ? [...l.tasks.filter(t=>t !== newTask)] : l.slug ===  newList ? [{...newTask, stage: l.slug}, ...l.tasks]:l.tasks.map(t=>({...t})),
+            tasks:
+              l.slug === newList
+                ? [...l.tasks, newTask]
+                : [...l.tasks.filter((t) => t.id !== newTask.id)],
           })),
         ],
       };
-      console.log(newState)
+      console.log(newState);
       upDateLocalStore(newState);
-      return newState
+      return newState;
     case "MODAL": {
       return {
         ...state,

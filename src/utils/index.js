@@ -11,3 +11,14 @@ export const sortTasks = (tasks, order) => {
 
     }
 }
+
+
+export const sortLists = (lists, order) => {
+    if(order==='d') {
+        return lists.sort((a,b)=> (b.priority - a.priority))
+    }
+    else {
+        return lists.sort((a,b)=> (a.priority - b.priority))
+
+    }
+}

@@ -26,18 +26,16 @@ const AddForm = ({ setBtns, btns }) => {
     const [formData, setFormData] = useState({
         id: `${btns.addBtn.stage.slice(0, 1)}_${(new Date()).getTime()}`,
         title: '',
-        description: '',
         due: '',
-        stage: btns.addBtn.stage
     })
 
-    const { title, description, due } = formData
+    const { title, due } = formData
 
     useEffect(() => {
         let temp = []
 
         Object.entries(formData).forEach(([key, value]) => {
-            if (key !== 'id' && key !== 'stage' && value === '') {
+            if (key !== 'id' && value === '') {
                 temp = [...temp, { [key]: `Please add ${key}` }]
             }
         })
@@ -55,25 +53,16 @@ const AddForm = ({ setBtns, btns }) => {
         }
         dispatch({
             type: ADD_TASK,
-            payload: formData
+            payload: {formData, stage: btns.addBtn.stage}
         })
         return setBtns({ ...btns, addBtn: { isClicked: false, stage: '' } })
     }
 
     const handleInputChange = e => {
-        if (e.target.value === '') {
+        if (e.target.value === '' && e.target.name !=='description') {
             setErrorsUI(prevErrors => [...prevErrors.filter(er => !er[e.target.name]), { [e.target.name]: `Please add ${e.target.name}` }])
         }
-
-        // else if (e.target.name === 'title' && e.target.value !== '') {
-        //     const findIfTitleExists = tasks.filter(t => t.title === e.target.value)
-        //     if (findIfTitleExists.length > 0) {
-        //         setErrorsUI(prevErrors => [...prevErrors.filter(ele => !ele[e.target.name]), { title: 'Title already exists' }])
-        //     }
-        //     else {
-        //         setErrorsUI(prevErrors => [...prevErrors.filter(ele => !ele[e.target.name])])
-        //     }
-        // }
+      
         else if (e.target.name === 'due' && e.target.value !== '') {
             const currDate = new Date()
             const inputDateArr = e.target.value.split('-')
@@ -104,11 +93,7 @@ const AddForm = ({ setBtns, btns }) => {
                     <input type="text" name='title' value={title} className='outline-none rounded-md border-[1px] border-slate-300 p-2 w-full text-sm' onChange={e => handleInputChange(e)} />
                     {showError && errorsUI.filter(e => e.title).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e => e.title)[0].title}</span>}
                 </div>
-                <div className='relative px-8'>
-                    <label className='text-sm mb-3 px-2 block capitalize' htmlFor="description"><span className="text-red-500">*</span> description</label>
-                    <input type="text" name='description' value={description} className='outline-none rounded-md border-[1px] border-slate-300 p-2 w-full text-sm' onChange={e => handleInputChange(e)} />
-                    {showError && errorsUI.filter(e => e.description).length > 0 && <span className='text-red-400 block mt-2 text-left text-xs'>{errorsUI.filter(e => e.description)[0].description}</span>}
-                </div>
+               
                 <div className='relative px-8'>
                     <label className='text-sm mb-3 px-2 block capitalize' htmlFor="due"><span className="text-red-500">*</span> due date</label>
                     <input type="date" name='due' value={due} className='outline-none rounded-md border-[1px] border-slate-300 p-2 w-full text-sm' onChange={e => handleInputChange(e)} />

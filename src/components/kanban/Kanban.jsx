@@ -5,12 +5,11 @@ import { useTaskContext } from '../../context'
 import TaskCard from '../ui/TaskCard'
 import DraggedTask from './DraggedTask'
 import { sortTasks } from '../../utils'
-import TaskDetail from './TaskDetail'
-import {DRAG_AND_DROP} from '../../context/types'
+import { DRAG_AND_DROP } from '../../context/types'
 
 const Kanban = () => {
     const [totalTasks, setTotalTasks] = useState(0)
-    const {state, dispatch} = useTaskContext()
+    const { state, dispatch } = useTaskContext()
     const { taskList } = state
     const dndRefs = useRef([])
     const [cords, setCords] = useState({ x: 0, y: 0 })
@@ -42,8 +41,8 @@ const Kanban = () => {
 
     useEffect(() => {
         if (taskList && taskList.length > 0) {
-            const total = taskList.reduce((s, t) =>  {return s + t.tasks.length}, 0)
-                setTotalTasks(total)
+            const total = taskList.reduce((s, t) => { return s + t.tasks.length }, 0)
+            setTotalTasks(total)
         }
     }, [taskList])
 
@@ -63,23 +62,11 @@ const Kanban = () => {
         }
     })
 
-    //     useEffect(() => {
-    //         if (tasks) {
-    //             let tempTaskList = { toDo: [], inProgress: [], done: [] }
-    // 
-    //             const sortedTasks = sortTasks(tasks)
-    //             sortedTasks.map(t => {
-    //                 tempTaskList = { ...tempTaskList, [t.stage]: [...(tempTaskList[t.stage] || []), t] }
-    //             })
-    //             setTaskList(tempTaskList)
-    //         }
-    //     }, [tasks])
-
     const { editBtn, addBtn } = btns
 
     useEffect(() => {
         if (addBtn.isClicked) {
-            setModal(<AddForm stage='toDo' btns={btns} setBtns={setBtns} />)
+            setModal(<AddForm btns={btns} setBtns={setBtns} />)
         }
         else if (editBtn.isClicked) {
             setModal(<EditForm taskId={editBtn.id} btns={btns} setBtns={setBtns} />)
@@ -90,19 +77,6 @@ const Kanban = () => {
         }
 
     }, [addBtn, editBtn])
-
-    const { task } = isClicked
-
-    useEffect(() => {
-        if (task && task !== '') {
-            console.log(task)
-            setModal(<TaskDetail closeModal={setIsClicked} task={task} />)
-        }
-        else {
-            setModal({})
-        }
-    }, [task])
-
 
     const dragStop = e => {
         setCords({ ...cords, x: e.clientX, y: e.clientY })
@@ -118,7 +92,7 @@ const Kanban = () => {
         const newTask = draggedTask.task
         dispatch({
             type: DRAG_AND_DROP,
-            payload: {newTask, newList: activeCol}
+            payload: { newTask, newList: activeCol }
         })
         setActiveCol('')
         setDraggedTask({ ...draggedTask, task: {} })
@@ -193,19 +167,19 @@ const Kanban = () => {
                                 </div>
                             }
 
-                            {taskList.map((k,i) =>
+                            {taskList.map((k, i) =>
                                 <div key={i} className={`select-none flex flex-col gap-y-6 pb-4 ${(isDragged && activeCol === k) && 'border-[1px] border-dashed border-slate-400'}`} ref={e => dndRefs.current[0] = e} >
                                     <h2 className='flex justify-between  text-lg mb-2 font-semibold border-b-[1px] border-slate-300 p-2'>
                                         <p>
-                                            <span className='mr-4'>{k.slug === 'toDo' ? 'To do' : k.slug === 'inProgress' ? 'In Progress': 'Done'}</span>
+                                            <span className='mr-4'>{k.title}</span>
                                             <span className='text-sm text-slate-500'>{k.tasks.length}</span>
                                         </p>
                                         {k.slug !== 'complete' &&
                                             <button type='button' className="flex items-center justify-center text-slate-800 pb-[3px] w-6 h-6 rounded-full border-[1px] border-slate-400" onClick={() => setBtns({ ...btns, addBtn: { isClicked: true, stage: k.slug } })}>+</button>
                                         }
                                     </h2>
-                                    {k.tasks.length > 0 &&k.tasks.map((task) =>
-                                        <TaskCard key={task.id} btns={btns} setBtns={setBtns} isClicked={isClicked} setIsClicked={setIsClicked} draggedId={draggedTask.task.id} startDrag={startDrag} task={task} />
+                                    {k.tasks.length > 0 && sortTasks(k.tasks).map((task) =>
+                                        <TaskCard stage={k.slug} key={task.id} btns={btns} setBtns={setBtns} isClicked={isClicked} setIsClicked={setIsClicked} draggedId={draggedTask.task.id} startDrag={startDrag} task={task} />
                                     )}
 
                                 </div>)}

@@ -11,16 +11,19 @@ const initialState = {
     {
       title: 'To Do',
       slug: 'toDo',
+      priority:0,
       tasks:[]
     },
     {
       title: 'In Progress',
       slug: 'inProgress',
+      priority:1,
       tasks:[]
     },
     {
       title: 'Complete',
       slug: 'complete',
+      priority:2,
       tasks:[]
     }
 
