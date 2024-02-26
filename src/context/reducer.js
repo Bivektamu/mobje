@@ -8,6 +8,9 @@ import {
   ADD_SHOPPING_LIST,
   EDIT_SHOPPING_LIST,
   MODAL,
+  ADD_SHOPPING_ITEM,
+  DELETE_SHOPPING_ITEM,
+  EDIT_SHOPPING_ITEM,
 } from "./types";
 
 const reducer = (state, action) => {
@@ -39,7 +42,7 @@ const reducer = (state, action) => {
       upDateLocalStore(newState);
       return newState;
 
-    case TASK_COMPLETE:
+    case TASK_COMPLETE: {
       const { id, stage } = action.payload;
       newState = {
         ...state,
@@ -59,6 +62,7 @@ const reducer = (state, action) => {
 
       upDateLocalStore(newState);
       return newState;
+    }
 
     case ADD_SHOPPING_LIST:
       newState = {
@@ -79,6 +83,65 @@ const reducer = (state, action) => {
       upDateLocalStore(newState);
       return newState;
 
+    case ADD_SHOPPING_ITEM: {
+      const { item, slug } = action.payload;
+      console.log("zxcvzxcvzxcv");
+      list = state.shoppingList.filter((t) => t.slug === slug)[0];
+
+      list = {
+        ...list,
+        items: list.items ? list.items.map((item) => ({ ...item })) : [],
+      };
+      list.items = [...list.items, item];
+      list = [list, ...state.shoppingList.filter((l) => l.slug !== list.slug)];
+
+      newState = {
+        ...state,
+        shoppingList: list,
+      };
+
+      upDateLocalStore(newState);
+      return newState;
+    }
+    case DELETE_SHOPPING_ITEM: {
+      const { slug, id } = action.payload;
+      list = [...state.shoppingList.filter((l) => l.slug === slug)].map(
+        (list) => ({
+          ...list,
+          items: list.items.map((item) => ({ ...item })),
+        })
+      )[0];
+      console.log(list);
+      list.items = [...list.items.filter((item) => item.id !== id)];
+      newState = {
+        ...state,
+        shoppingList: [
+          list,
+          ...state.shoppingList.filter((list) => list.slug !== slug),
+        ],
+      };
+      upDateLocalStore(newState);
+      return newState;
+    }
+    case EDIT_SHOPPING_ITEM: {
+      console.log(action.payload);
+      newState = {
+        ...state,
+        shoppingList: [
+          ...state.shoppingList.map((list) => ({
+            ...list,
+            items: [
+              ...list.items.map((item) => {
+                if (item.id === action.payload.id) return { ...action.payload };
+                else return { ...item };
+              }),
+            ],
+          })),
+        ],
+      };
+      upDateLocalStore(newState)
+      return newState;
+    }
     case EDIT_TASK:
       list = [
         ...state.taskList.map((l) => ({
@@ -137,7 +200,7 @@ const reducer = (state, action) => {
       }
       upDateLocalStore(newState);
       return newState;
-      
+
     case MODAL: {
       return {
         ...state,
@@ -146,7 +209,9 @@ const reducer = (state, action) => {
     }
 
     default:
-      console.log("No Dispatch action implemented. Maybe you have missing case");
+      console.log(
+        "No Dispatch action implemented. Maybe you have missing case"
+      );
       return state;
   }
 };

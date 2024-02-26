@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import {NavLink} from 'react-router-dom'
 import { useTaskContext } from '../../context'
 import PropTypes from 'prop-types'
-import AddForm from '../kanban/AddForm'
 import AddList from './AddList'
 import EditList from './EditList'
 
