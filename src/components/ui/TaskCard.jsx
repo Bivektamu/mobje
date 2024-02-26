@@ -68,7 +68,7 @@ const TaskCard = ({ task, stage, startDrag, draggedId, setBtns, btns, setIsClick
 
     return (
 
-        <div key={id} className={`select-none relative  w-[180px] mx-auto  bg-white  rounded-md text-black cursor-pointer  ${draggedId === id && 'opacity-0'}`}  onMouseDown={(e) => { startDrag(e, task) }}>
+        <div key={id} className={`task select-none relative  w-[180px] mx-auto  bg-white  rounded-md text-black cursor-pointer  ${draggedId === id && 'opacity-0'}`}  onMouseDown={(e) => { startDrag(e, task) }}>
             <div className='flex justify-between items-center border-b-[1px] border-slate-300 py-2 px-4' >
                 <p className='w-[130px] text-left' >{title.length < 14 ? title : title.slice(0, 14) + '...'}</p>
                 <div className='relative' >

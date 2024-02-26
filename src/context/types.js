@@ -5,3 +5,5 @@ export const DRAG_AND_DROP = 'DRAG_AND_DROP'
 export const EDIT_TASK = 'EDIT_TASK'
 export const ADD_SHOPPING_LIST = 'ADD_SHOPPING_LIST'
 export const EDIT_SHOPPING_LIST = 'EDIT_SHOPPING_LIST'
+export const ADD_SHOPPING_ITEM="ADD_SHOPPING_ITEM"
+export const MODAL = 'MODAL'

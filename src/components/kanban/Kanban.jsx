@@ -78,29 +78,7 @@ const Kanban = () => {
 
     }, [addBtn, editBtn])
 
-    const dragStop = e => {
-        setCords({ ...cords, x: e.clientX, y: e.clientY })
-        setDragged(false)
-        if (activeCol === '' || !activeCol) {
-            return setDraggedTask({ ...draggedTask, task: {} })
-
-        }
-        if (activeCol === draggedTask.task.stage) {
-            setDraggedTask({ ...draggedTask, task: {} })
-            return setActiveCol('')
-        }
-        const newTask = draggedTask.task
-        dispatch({
-            type: DRAG_AND_DROP,
-            payload: { newTask, newList: activeCol }
-        })
-        setActiveCol('')
-        setDraggedTask({ ...draggedTask, task: {} })
-        dispatch({
-            type: 'SET'
-        })
-    }
-
+    
     const mouseTracker = e => {
         if (!isDragged) {
             return
@@ -131,6 +109,27 @@ const Kanban = () => {
         setCords({ ...cords, x: e.clientX, y: e.clientY })
         setDraggedTask({ ...draggedTask, x: draggedTask.x + diff.x, y: draggedTask.y + diff.y })
     }
+
+    const dragStop = e => {
+        setCords({ ...cords, x: e.clientX, y: e.clientY })
+        setDragged(false)
+        if (activeCol === '' || !activeCol) {
+            return setDraggedTask({ ...draggedTask, task: {} })
+
+        }
+        else if (activeCol === taskList.filter(list => list.tasks.some(task => task.id === draggedTask.task.id)).map(list => list.slug)[0]) {
+            setDraggedTask({ ...draggedTask, task: {} })
+            return setActiveCol('')
+        }
+        const newTask = draggedTask.task
+        dispatch({
+            type: DRAG_AND_DROP,
+            payload: { newTask, newList: activeCol }
+        })
+        setActiveCol('')
+        setDraggedTask({ ...draggedTask, task: {} })
+    }
+
 
     const startDrag = (e, task) => {
         e.preventDefault()

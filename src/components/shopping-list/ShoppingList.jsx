@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import {NavLink} from 'react-router-dom'
 import { useTaskContext } from '../../context'
 import PropTypes from 'prop-types'
 import AddForm from '../kanban/AddForm'
@@ -69,7 +70,7 @@ const ShoppingList = props => {
                 <div className="flex gap-x-10">
                     {shoppingList.length > 0 && shoppingList.map((s, i) =>
 
-                        <div key={i} className={`select-none relative  w-[180px] mx-auto  bg-white  rounded-md text-black cursor-pointer text-center p-6 shadow-lg shadow-slate-500/50 flex items-center justify-center`}
+                        <NavLink to={`/shopping/${s.slug}`} key={i} className={`grocery-list select-none relative  w-[180px] mx-auto  bg-white  rounded-md text-black cursor-pointer text-center p-6 shadow-lg shadow-slate-500/50 flex items-center justify-center`}
                         >
                             {s.title}
 
@@ -89,7 +90,7 @@ const ShoppingList = props => {
                                     </div>
                                 }
                             </div>
-                        </div>
+                        </NavLink>
                     )}
 
                     <button type='button'

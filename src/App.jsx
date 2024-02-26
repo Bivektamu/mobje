@@ -5,6 +5,7 @@ import { useTaskContext } from './context';
 import './App.css'
 import Modal from './components/ui/Modal'
 import ShoppingList from './components/shopping-list/ShoppingList';
+import ShoppingListDetails from './components/shopping-list/ShoppingListDetails';
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
           <Routes>
             <Route path='/task' element={<Kanban />} exact />
             <Route path='/shopping' element={<ShoppingList />} exact />
+            <Route path='/shopping/:slug' element={<ShoppingListDetails />} exact />
           </Routes>
         </Router>
       </div>

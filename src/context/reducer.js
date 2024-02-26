@@ -7,6 +7,7 @@ import {
   EDIT_TASK,
   ADD_SHOPPING_LIST,
   EDIT_SHOPPING_LIST,
+  MODAL,
 } from "./types";
 
 const reducer = (state, action) => {
@@ -68,17 +69,17 @@ const reducer = (state, action) => {
       return newState;
 
     case EDIT_SHOPPING_LIST:
-
       newState = {
         ...state,
-        shoppingList: [...state.shoppingList.filter(l=>l.slug!==action.payload.slug), action.payload],
+        shoppingList: [
+          ...state.shoppingList.filter((l) => l.slug !== action.payload.slug),
+          action.payload,
+        ],
       };
       upDateLocalStore(newState);
       return newState;
 
     case EDIT_TASK:
-      console.log(action.payload);
-
       list = [
         ...state.taskList.map((l) => ({
           ...l,
@@ -103,7 +104,6 @@ const reducer = (state, action) => {
       }
 
     case DELETE_TASK:
-      console.log(action.payload);
       list = state.taskList.map((l) => ({
         ...l,
         tasks: l.tasks.map((t) => ({ ...t })),
@@ -120,24 +120,25 @@ const reducer = (state, action) => {
       return newState;
 
     case DRAG_AND_DROP:
-      const { newTask, newList } = action.payload;
-      console.log(newTask, newList);
-      newState = {
-        ...state,
-        taskList: [
-          ...state.taskList.map((l) => ({
-            ...l,
-            tasks:
-              l.slug === newList
-                ? [...l.tasks, newTask]
-                : [...l.tasks.filter((t) => t.id !== newTask.id)],
-          })),
-        ],
-      };
-      console.log(newState);
+      {
+        const { newTask, newList } = action.payload;
+        newState = {
+          ...state,
+          taskList: [
+            ...state.taskList.map((l) => ({
+              ...l,
+              tasks:
+                l.slug === newList
+                  ? [...l.tasks, newTask]
+                  : [...l.tasks.filter((t) => t.id !== newTask.id)],
+            })),
+          ],
+        };
+      }
       upDateLocalStore(newState);
       return newState;
-    case "MODAL": {
+      
+    case MODAL: {
       return {
         ...state,
         modal: action.payload,
@@ -145,7 +146,7 @@ const reducer = (state, action) => {
     }
 
     default:
-      console.log("Nothing done");
+      console.log("No Dispatch action implemented. Maybe you have missing case");
       return state;
   }
 };

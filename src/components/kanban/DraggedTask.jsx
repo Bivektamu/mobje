@@ -9,7 +9,7 @@ const DraggedTask = ({task}) => {
 
     }
     return (
-        <div  className={`relative  w-[180px] mx-auto  bg-white  rounded-md text-black cursor-pointer`}>
+        <div id="dragged-task" className={`relative  w-[180px] mx-auto  bg-white  rounded-md text-black cursor-pointer`}>
             <div className='flex justify-between items-center border-b-[1px] border-slate-300 py-2 px-4' >
                 <p className='w-[130px] text-left' >{task.title.length < 14 ? task.title:task.title.slice(0,14)+'...'}</p>
             </div>
