@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { NavLink, useParams } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { FaCirclePlus } from "react-icons/fa6";
 import { FaRegSquare, FaCheck } from "react-icons/fa";
@@ -95,7 +95,7 @@ const ShoppingListDetails = props => {
 
     const content = (
       <>
-        <h3 className='font-semibold border-b-[1px] border-slate-300 px-4 py-4 text-center'>Are you sure you want to delete the task ?</h3>
+        <h3 className='font-semibold border-b-[1px] border-slate-300 px-4 py-4 text-center'>Are you sure you want to delete the item ?</h3>
         <div className="flex px-8  pt-4 justify-center items-center border-t-[1px] border-slate-300 gap-x-4 pb-6">
           <button type='button' className='bg-slate-100 text-slate-1000 border-[1px] border-slate-400 rounded-md px-4 py-1'
             onClick={() => dispatch({ type: 'MODAL', payload: {} })}>Cancel</button>
@@ -134,6 +134,7 @@ const ShoppingListDetails = props => {
 
   return (
     <section id="shopping-list-details" className='w-full flex items-center justify-center py-10 flex-col gap-6  h-screen' onClick={handleEvent}>
+      <NavLink className='w-[400px] font-semibold text-xs' to='/shopping'> &lt; Back to Shopping List</NavLink>
       <div className="w-[400px] bg-white text-center rounded-lg shadow-lg">
         <h1 className="text-xl  font-semibold border-b-[1px] border-slate-300 px-8 py-4">{title}</h1>
         <div className="px-4 py-4">

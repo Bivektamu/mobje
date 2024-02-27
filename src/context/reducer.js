@@ -1,3 +1,4 @@
+import { MdCollectionsBookmark } from "react-icons/md";
 import { sortLists } from "../utils";
 import {
   ADD_TASK,
@@ -7,6 +8,7 @@ import {
   EDIT_TASK,
   ADD_SHOPPING_LIST,
   EDIT_SHOPPING_LIST,
+  DELETE_SHOPPING_LIST,
   MODAL,
   ADD_SHOPPING_ITEM,
   DELETE_SHOPPING_ITEM,
@@ -75,11 +77,19 @@ const reducer = (state, action) => {
     case EDIT_SHOPPING_LIST:
       newState = {
         ...state,
-        shoppingList: [
-          ...state.shoppingList.filter((l) => l.slug !== action.payload.slug),
-          action.payload,
-        ],
+        shoppingList: [...state.shoppingList.filter(list=>list.slug!==action.payload)],
       };
+      upDateLocalStore(newState);
+      return newState;
+
+    case DELETE_SHOPPING_LIST:
+      console.log(action)
+      newState = {
+        ...state,
+        shoppingList: [...state.shoppingList.filter((l) => l.slug !== action.payload)],
+      };
+
+      console.log(newState)
       upDateLocalStore(newState);
       return newState;
 
@@ -139,7 +149,7 @@ const reducer = (state, action) => {
           })),
         ],
       };
-      upDateLocalStore(newState)
+      upDateLocalStore(newState);
       return newState;
     }
     case EDIT_TASK:

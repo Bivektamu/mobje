@@ -40,7 +40,7 @@ const AddList = ({ setBtns }) => {
             type: ADD_SHOPPING_LIST,
             payload: formData
         })
-        setBtns({ ...btns, addBtn: false})
+        setBtns({action:'', payload:''})
     }
 
     const handleInputChange = e => {
